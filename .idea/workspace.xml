@@ -92,18 +92,18 @@
     <option name="LAST_COMMIT_MESSAGE" value="v1002&#10;add l2 loss bandpass filter" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="552" y="239" key="#Notifications" timestamp="1580465701623">
+    <state x="552" y="239" key="#Notifications" timestamp="1580465832252">
       <screen x="0" y="0" width="1920" height="1160" />
     </state>
-    <state x="552" y="239" key="#Notifications/0.0.1920.1160@0.0.1920.1160" timestamp="1580465701623" />
+    <state x="552" y="239" key="#Notifications/0.0.1920.1160@0.0.1920.1160" timestamp="1580465832252" />
     <state x="414" y="236" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1580454798276">
       <screen x="0" y="0" width="1920" height="1160" />
     </state>
     <state x="414" y="236" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1160@0.0.1920.1160" timestamp="1580454798276" />
-    <state x="614" y="175" key="CommitChangelistDialog2" timestamp="1580465789692">
+    <state x="614" y="175" key="CommitChangelistDialog2" timestamp="1580465854021">
       <screen x="0" y="0" width="1920" height="1160" />
     </state>
-    <state x="614" y="175" key="CommitChangelistDialog2/0.0.1920.1160@0.0.1920.1160" timestamp="1580465789692" />
+    <state x="614" y="175" key="CommitChangelistDialog2/0.0.1920.1160@0.0.1920.1160" timestamp="1580465854021" />
     <state width="1453" height="466" key="DebuggerActiveHint" timestamp="1580460768076">
       <screen x="0" y="0" width="1920" height="1160" />
     </state>
@@ -144,14 +144,14 @@
       <screen x="0" y="0" width="1920" height="1160" />
     </state>
     <state width="1899" height="229" key="GridCell.Tab.1.right/0.0.1920.1160@0.0.1920.1160" timestamp="1580465620882" />
-    <state x="461" y="223" key="SettingsEditor" timestamp="1580465765719">
+    <state x="461" y="223" key="SettingsEditor" timestamp="1580465843239">
       <screen x="0" y="0" width="1920" height="1160" />
     </state>
-    <state x="461" y="223" key="SettingsEditor/0.0.1920.1160@0.0.1920.1160" timestamp="1580465765719" />
-    <state x="552" y="314" key="Vcs.Push.Dialog.v2" timestamp="1580465780687">
+    <state x="461" y="223" key="SettingsEditor/0.0.1920.1160@0.0.1920.1160" timestamp="1580465843239" />
+    <state x="552" y="314" key="Vcs.Push.Dialog.v2" timestamp="1580465817621">
       <screen x="0" y="0" width="1920" height="1160" />
     </state>
-    <state x="552" y="314" key="Vcs.Push.Dialog.v2/0.0.1920.1160@0.0.1920.1160" timestamp="1580465780687" />
+    <state x="552" y="314" key="Vcs.Push.Dialog.v2/0.0.1920.1160@0.0.1920.1160" timestamp="1580465817621" />
     <state x="769" y="498" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1580465768226">
       <screen x="0" y="0" width="1920" height="1160" />
     </state>
