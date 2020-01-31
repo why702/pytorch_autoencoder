@@ -2,15 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1071a618-639a-4369-9b0e-6a2717ffb0b3" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ae_snr.py" beforeDir="false" afterPath="$PROJECT_DIR$/ae_snr.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data_augmentation.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_augmentation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/debug290.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/model/l2_loss/checkpoint" beforeDir="false" afterPath="$PROJECT_DIR$/model/l2_loss/checkpoint" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/l2_loss/model-ae.ckpt-290.data-00000-of-00001" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/l2_loss/model-ae.ckpt-290.index" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/l2_loss/model-ae.ckpt-291.data-00000-of-00001" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/l2_loss/model-ae.ckpt-291.index" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,7 +22,7 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/ae_snr.py" />
-    <property name="settings.editor.selected.configurable" value="vcs.Git" />
+    <property name="settings.editor.selected.configurable" value="settings.github" />
   </component>
   <component name="RunManager">
     <configuration name="ae_snr" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
@@ -78,17 +70,40 @@
       <option name="presentableId" value="Default" />
       <updated>1580454782102</updated>
     </task>
+    <task id="LOCAL-00001" summary="v1002&#10;add l2 loss bandpass filter">
+      <created>1580465613465</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1580465613465</updated>
+    </task>
+    <task id="LOCAL-00002" summary="v1002&#10;add l2 loss bandpass filter">
+      <created>1580465679560</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1580465679560</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="v1002&#10;add l2 loss bandpass filter" />
+    <option name="LAST_COMMIT_MESSAGE" value="v1002&#10;add l2 loss bandpass filter" />
+  </component>
   <component name="WindowStateProjectService">
+    <state x="552" y="239" key="#Notifications" timestamp="1580465701623">
+      <screen x="0" y="0" width="1920" height="1160" />
+    </state>
+    <state x="552" y="239" key="#Notifications/0.0.1920.1160@0.0.1920.1160" timestamp="1580465701623" />
     <state x="414" y="236" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1580454798276">
       <screen x="0" y="0" width="1920" height="1160" />
     </state>
     <state x="414" y="236" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1160@0.0.1920.1160" timestamp="1580454798276" />
-    <state x="614" y="175" key="CommitChangelistDialog2" timestamp="1580465641420">
+    <state x="614" y="175" key="CommitChangelistDialog2" timestamp="1580465677627">
       <screen x="0" y="0" width="1920" height="1160" />
     </state>
-    <state x="614" y="175" key="CommitChangelistDialog2/0.0.1920.1160@0.0.1920.1160" timestamp="1580465641420" />
+    <state x="614" y="175" key="CommitChangelistDialog2/0.0.1920.1160@0.0.1920.1160" timestamp="1580465677627" />
     <state width="1453" height="466" key="DebuggerActiveHint" timestamp="1580460768076">
       <screen x="0" y="0" width="1920" height="1160" />
     </state>
@@ -129,13 +144,17 @@
       <screen x="0" y="0" width="1920" height="1160" />
     </state>
     <state width="1899" height="229" key="GridCell.Tab.1.right/0.0.1920.1160@0.0.1920.1160" timestamp="1580465620882" />
-    <state x="461" y="223" key="SettingsEditor" timestamp="1580455806228">
+    <state x="461" y="223" key="SettingsEditor" timestamp="1580465765719">
       <screen x="0" y="0" width="1920" height="1160" />
     </state>
-    <state x="461" y="223" key="SettingsEditor/0.0.1920.1160@0.0.1920.1160" timestamp="1580455806228" />
-    <state x="769" y="498" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1580465647011">
+    <state x="461" y="223" key="SettingsEditor/0.0.1920.1160@0.0.1920.1160" timestamp="1580465765719" />
+    <state x="552" y="314" key="Vcs.Push.Dialog.v2" timestamp="1580465683889">
       <screen x="0" y="0" width="1920" height="1160" />
     </state>
-    <state x="769" y="498" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1920.1160@0.0.1920.1160" timestamp="1580465647011" />
+    <state x="552" y="314" key="Vcs.Push.Dialog.v2/0.0.1920.1160@0.0.1920.1160" timestamp="1580465683889" />
+    <state x="769" y="498" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1580465768226">
+      <screen x="0" y="0" width="1920" height="1160" />
+    </state>
+    <state x="769" y="498" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1920.1160@0.0.1920.1160" timestamp="1580465768226" />
   </component>
 </project>
