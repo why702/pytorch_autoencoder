@@ -1,7 +1,3 @@
-#!/usr/bin/env python
-""" autoencoder for fingerprint
-"""
-
 import numpy as np
 from scipy import misc
 # from PIL import Image
@@ -11,15 +7,6 @@ import util
 import skimage
 import tensorflow as tf
 from tensorflow.python.ops import data_flow_ops
-
-__author__ = "Bill Wang"
-__copyright__ = ""
-__credits__ = []
-__license__ = ""
-__version__ = "1.0.0.1"
-__maintainer__ = "Bill Wang"
-__email__ = "why702@gmail.com"
-__status__ = "Study"
 
 DEBUG = False
 
