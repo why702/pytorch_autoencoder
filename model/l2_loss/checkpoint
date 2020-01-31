@@ -1,3 +1,4 @@
-model_checkpoint_path: "model-ae.ckpt-291"
-all_model_checkpoint_paths: "model-ae.ckpt-290"
-all_model_checkpoint_paths: "model-ae.ckpt-291"
+model_checkpoint_path: "model-ae.ckpt-7"
+all_model_checkpoint_paths: "model-ae.ckpt-5"
+all_model_checkpoint_paths: "model-ae.ckpt-6"
+all_model_checkpoint_paths: "model-ae.ckpt-7"
