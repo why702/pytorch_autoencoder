@@ -43,7 +43,7 @@ class configuration():
     def run(self, input_placeholder, control_placeholder,
             batch_size_placeholder):
 
-        index_queue = tf.train.range_input_producer(len(self.train_list))
+        index_queue = tf.compat.v1.train.range_input_producer(len(self.train_list))
 
         index_dequeue_op = index_queue.dequeue_many(
             self.batch_size * self.epoch_size, 'index_dequeue')
@@ -139,9 +139,9 @@ class configuration():
             #     lambda: tf.identity(image))
             image = tf.cond(
                 get_control_flag(control[0],
-                                 self.RANDOM_CROP), lambda: tf.random_crop(
+                                 self.RANDOM_CROP), lambda: tf.image.random_crop(
                                      image, image_size + (1, )),
-                lambda: tf.image.resize_image_with_crop_or_pad(
+                lambda: tf.image.resize_with_crop_or_pad(
                     image, image_size[0], image_size[1]))
             image = tf.cond(get_control_flag(
                 control[0],
@@ -159,7 +159,7 @@ class configuration():
             image.set_shape(image_size + (1, ))
             images_list.append([[image]])
 
-        image_batch = tf.train.batch_join(images_list,
+        image_batch = tf.compat.v1.train.batch_join(images_list,
                                           batch_size=batch_size_placeholder,
                                           shapes=[image_size + (1, )],
                                           enqueue_many=True,
@@ -180,7 +180,7 @@ def random_rotate_image(image):
 
 
 def get_control_flag(control, field):
-    return tf.equal(tf.mod(tf.floor_div(control, field), 2), 1)
+    return tf.equal(tf.math.floormod(tf.math.floordiv(control, field), 2), 1)
 
 
 def LPF_FWHM(byte, LPF=0.13):
