@@ -2,10 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1071a618-639a-4369-9b0e-6a2717ffb0b3" name="Default Changelist" comment="v1002&#10;add l2 loss bandpass filter">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/tensorflow_autoencoder.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/tensorflow_autoencoder.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data_augmentation.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_augmentation.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ae_snr.py" beforeDir="false" afterPath="$PROJECT_DIR$/ae_snr.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/v2/ae_snr.py" beforeDir="false" afterPath="$PROJECT_DIR$/v2/ae_snr.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/v2/data_augmentation.py" beforeDir="false" afterPath="$PROJECT_DIR$/v2/data_augmentation.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -17,6 +18,7 @@
     <option name="UPDATE_TYPE" value="MERGE" />
   </component>
   <component name="ProjectId" id="1X9OKu79Mf0f147qCJldgA2z45r" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showExcludedFiles" value="true" />
@@ -24,11 +26,37 @@
   </component>
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/ae_snr.py" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/fft2d.py" />
     <property name="restartRequiresConfirmation" value="false" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
-  <component name="RunManager">
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\git\tensorflow_autoencoder" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python.fft2d">
+    <configuration name="ae_snr - Copy" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+      <module name="tensorflow_autoencoder" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/ae_snr - Copy.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="ae_snr" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="tensorflow_autoencoder" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -50,6 +78,76 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="ae_snr_" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+      <module name="tensorflow_autoencoder" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/ae_snr_.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="ae_snr_tf2" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+      <module name="tensorflow_autoencoder" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/ae_snr_tf2.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="fft2d" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+      <module name="tensorflow_autoencoder" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/fft2d.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Python.ae_snr" />
+      <item itemvalue="Python.ae_snr - Copy" />
+      <item itemvalue="Python.ae_snr_" />
+      <item itemvalue="Python.fft2d" />
+      <item itemvalue="Python.ae_snr_tf2" />
+    </list>
   </component>
   <component name="ServiceViewManager">
     <option name="viewStates">
@@ -114,62 +212,65 @@
       <screen x="0" y="0" width="1920" height="1160" />
     </state>
     <state x="552" y="239" key="#Notifications/0.0.1920.1160@0.0.1920.1160" timestamp="1580465832252" />
-    <state x="414" y="212" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1580886192924">
+    <state x="414" y="212" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1581299477207">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="414" y="212" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1580886192924" />
+    <state x="414" y="212" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1581299477207" />
     <state x="414" y="236" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1160@0.0.1920.1160" timestamp="1580454798276" />
-    <state x="614" y="175" key="CommitChangelistDialog2" timestamp="1580465854021">
-      <screen x="0" y="0" width="1920" height="1160" />
+    <state x="614" y="157" key="CommitChangelistDialog2" timestamp="1580980636119">
+      <screen x="0" y="0" width="1920" height="1040" />
     </state>
+    <state x="614" y="157" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1580980636119" />
     <state x="614" y="175" key="CommitChangelistDialog2/0.0.1920.1160@0.0.1920.1160" timestamp="1580465854021" />
-    <state width="1453" height="466" key="DebuggerActiveHint" timestamp="1580469478147">
-      <screen x="0" y="0" width="1920" height="1160" />
+    <state width="1516" height="418" key="DebuggerActiveHint" timestamp="1580992072901">
+      <screen x="0" y="0" width="1920" height="1040" />
     </state>
+    <state width="1516" height="418" key="DebuggerActiveHint/0.0.1920.1040@0.0.1920.1040" timestamp="1580992072901" />
     <state width="1453" height="466" key="DebuggerActiveHint/0.0.1920.1160@0.0.1920.1160" timestamp="1580469478147" />
-    <state x="740" y="336" key="FileChooserDialogImpl" timestamp="1580455802076">
-      <screen x="0" y="0" width="1920" height="1160" />
+    <state x="740" y="301" key="FileChooserDialogImpl" timestamp="1581299475863">
+      <screen x="0" y="0" width="1920" height="1040" />
     </state>
+    <state x="740" y="301" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1581299475863" />
     <state x="740" y="336" key="FileChooserDialogImpl/0.0.1920.1160@0.0.1920.1160" timestamp="1580455802076" />
-    <state width="1899" height="199" key="GridCell.Tab.0.bottom" timestamp="1580907507127">
+    <state width="1899" height="199" key="GridCell.Tab.0.bottom" timestamp="1581300123263">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1899" height="199" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1580907507127" />
+    <state width="1899" height="199" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1581300123263" />
     <state width="1899" height="321" key="GridCell.Tab.0.bottom/0.0.1920.1160@0.0.1920.1160" timestamp="1580729809924" />
-    <state width="1899" height="199" key="GridCell.Tab.0.center" timestamp="1580907507127">
+    <state width="1899" height="199" key="GridCell.Tab.0.center" timestamp="1581300123263">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1899" height="199" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1580907507127" />
+    <state width="1899" height="199" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1581300123263" />
     <state width="1899" height="321" key="GridCell.Tab.0.center/0.0.1920.1160@0.0.1920.1160" timestamp="1580729809924" />
-    <state width="1899" height="199" key="GridCell.Tab.0.left" timestamp="1580907507127">
+    <state width="1899" height="199" key="GridCell.Tab.0.left" timestamp="1581300123263">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1899" height="199" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1580907507127" />
+    <state width="1899" height="199" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1581300123263" />
     <state width="1899" height="321" key="GridCell.Tab.0.left/0.0.1920.1160@0.0.1920.1160" timestamp="1580729809924" />
-    <state width="1899" height="199" key="GridCell.Tab.0.right" timestamp="1580907507127">
+    <state width="1899" height="199" key="GridCell.Tab.0.right" timestamp="1581300123263">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1899" height="199" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1580907507127" />
+    <state width="1899" height="199" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1581300123263" />
     <state width="1899" height="321" key="GridCell.Tab.0.right/0.0.1920.1160@0.0.1920.1160" timestamp="1580729809924" />
-    <state width="1899" height="199" key="GridCell.Tab.1.bottom" timestamp="1580907504799">
+    <state width="1899" height="199" key="GridCell.Tab.1.bottom" timestamp="1581300126856">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1899" height="199" key="GridCell.Tab.1.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1580907504799" />
+    <state width="1899" height="199" key="GridCell.Tab.1.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1581300126856" />
     <state width="1899" height="229" key="GridCell.Tab.1.bottom/0.0.1920.1160@0.0.1920.1160" timestamp="1580729809924" />
-    <state width="1899" height="199" key="GridCell.Tab.1.center" timestamp="1580907504799">
+    <state width="1899" height="199" key="GridCell.Tab.1.center" timestamp="1581300126856">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1899" height="199" key="GridCell.Tab.1.center/0.0.1920.1040@0.0.1920.1040" timestamp="1580907504799" />
+    <state width="1899" height="199" key="GridCell.Tab.1.center/0.0.1920.1040@0.0.1920.1040" timestamp="1581300126856" />
     <state width="1899" height="229" key="GridCell.Tab.1.center/0.0.1920.1160@0.0.1920.1160" timestamp="1580729809924" />
-    <state width="1899" height="199" key="GridCell.Tab.1.left" timestamp="1580907504799">
+    <state width="1899" height="199" key="GridCell.Tab.1.left" timestamp="1581300126856">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1899" height="199" key="GridCell.Tab.1.left/0.0.1920.1040@0.0.1920.1040" timestamp="1580907504799" />
+    <state width="1899" height="199" key="GridCell.Tab.1.left/0.0.1920.1040@0.0.1920.1040" timestamp="1581300126856" />
     <state width="1899" height="229" key="GridCell.Tab.1.left/0.0.1920.1160@0.0.1920.1160" timestamp="1580729809924" />
-    <state width="1899" height="199" key="GridCell.Tab.1.right" timestamp="1580907504799">
+    <state width="1899" height="199" key="GridCell.Tab.1.right" timestamp="1581300126856">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1899" height="199" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1580907504799" />
+    <state width="1899" height="199" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1581300126856" />
     <state width="1899" height="229" key="GridCell.Tab.1.right/0.0.1920.1160@0.0.1920.1160" timestamp="1580729809924" />
     <state x="461" y="200" key="SettingsEditor" timestamp="1580886047721">
       <screen x="0" y="0" width="1920" height="1040" />
@@ -184,5 +285,23 @@
       <screen x="0" y="0" width="1920" height="1160" />
     </state>
     <state x="769" y="498" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1920.1160@0.0.1920.1160" timestamp="1580465768226" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/fft2d.py</url>
+          <line>26</line>
+          <option name="timeStamp" value="46" />
+        </line-breakpoint>
+      </breakpoints>
+      <default-breakpoints>
+        <breakpoint type="python-exception">
+          <properties notifyOnTerminate="true" exception="BaseException">
+            <option name="notifyOnTerminate" value="true" />
+          </properties>
+        </breakpoint>
+      </default-breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
