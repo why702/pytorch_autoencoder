@@ -4,6 +4,7 @@ import struct
 import cv2
 import math
 import os
+import csv
 
 def read_bin(bin_path, tuple_size=(200, 200), low_endian=True):
     f = open(bin_path, "r")
@@ -46,7 +47,7 @@ def convert_lbp(byte):
     return lbp
 
 
-def substract(nd1, nd2):
+def subtract(nd1, nd2):
     diff = np.subtract(nd1.astype(np.float32), nd2.astype(np.float32))
     min = np.min(diff)
     diff -= min
@@ -190,6 +191,71 @@ def read_bins(bin_dir, width, height, low_endian, FORMAT = 0):
 
     print("img_list size is {}".format(len(img_list)))
     return img_list, bk_list, ipp_list, bds_list
+
+def read_bins_toCSV(bin_dir, out_path, width, height, low_endian, FORMAT = 0):
+    BK_et = 0
+    need_bk = True
+    count = 0
+
+    with open(out_path, 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        for root, dirs, files in os.walk(bin_dir, topdown=False):
+            for name in files:
+                # print(os.path.join(root, name))
+
+                if os.path.splitext(name)[1] == '.bin':
+
+                    if FORMAT == 702:
+                        # if root.find("image_raw") != -1:
+                        #     img = util.read_bin(os.path.join(root, name),
+                        #                         (height, width), low_endian)
+                        #     img = np.pad(img, ((2, 2), (1, 1)), 'reflect')
+                        # if img is None:
+                        #     continue
+                        #
+                        # # diff = util.normalize_ndarray(img) * 255
+                        # # cv2.imshow("", diff.astype(np.uint8))
+                        # # cv2.waitKey()
+                        #
+                        # self.input_list.append(img)
+                        pass
+                    else:
+
+                        if name.find("_Img16b_") != -1:
+
+                            #find et
+                            et = name[name.find("_et=") + 4: name.find("_hc=")]
+
+                            #find bk
+                            mi = name[name.find("mica=") + 5: name.find("mica=") + 7]
+
+                            if root.find("enroll") != -1 and mi == "00" and need_bk:
+                                bk_name = name.replace("Img16b", "Img16bBkg")
+                                bk = os.path.join(root, bk_name)
+                                need_bk = False
+                                BK_et = et
+                            elif need_bk == False and root.find("enroll") == -1:
+                                need_bk = True
+
+                            if BK_et != et or et == 0:
+                                continue
+
+                            img = os.path.join(root, name)
+
+                            ipp_name = name.replace("Img16b", "Img8b")
+                            ipp = os.path.join(root, ipp_name)
+
+                            bds_name = name.replace("Img16b", "Img16bBkg")
+                            bds = os.path.join(root, bds_name)
+
+                            if os.path.exists(img) is False or os.path.exists(bk) is False or os.path.exists(ipp) is False or os.path.exists(bds) is False:
+                                continue
+
+                            writer.writerow([img, bk, ipp, bds])
+                            count += 1
+
+    print("img_list size is {}".format(count))
+    return
 
 
 if __name__ == '__main__':
