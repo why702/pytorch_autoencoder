@@ -192,7 +192,7 @@ def read_bins(bin_dir, width, height, low_endian, FORMAT = 0):
     print("img_list size is {}".format(len(img_list)))
     return img_list, bk_list, ipp_list, bds_list
 
-def read_bins_toCSV(bin_dir, out_path, width, height, low_endian, FORMAT = 0):
+def read_bins_toCSV(bin_dir, out_path, width, height, low_endian, FORMAT = 0, GOOD = False):
     BK_et = 0
     need_bk = True
     count = 0
@@ -226,8 +226,17 @@ def read_bins_toCSV(bin_dir, out_path, width, height, low_endian, FORMAT = 0):
                             #find et
                             et = name[name.find("_et=") + 4: name.find("_hc=")]
 
-                            #find bk
+                            #find mica
                             mi = name[name.find("mica=") + 5: name.find("mica=") + 7]
+
+                            #find egp
+                            egp = int(name[name.find("_egp=") + 5: name.find("_rl=")])
+
+                            #find rl
+                            rl = int(name[name.find("_rl=") + 4: name.find("_CxCy")])
+
+                            if GOOD and egp < 80 or rl > 0:
+                                continue
 
                             if root.find("enroll") != -1 and mi == "00" and need_bk:
                                 bk_name = name.replace("Img16b", "Img16bBkg")
