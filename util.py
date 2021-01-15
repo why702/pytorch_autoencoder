@@ -5,6 +5,8 @@ import cv2
 import math
 import os
 import csv
+import re
+import shutil
 
 def read_bin(bin_path, tuple_size=(200, 200), low_endian=True):
     f = open(bin_path, "r")
@@ -229,11 +231,12 @@ def read_bins_toCSV(bin_dir, out_path, width, height, low_endian, FORMAT = 0, GO
                             #find mica
                             mi = name[name.find("mica=") + 5: name.find("mica=") + 7]
 
-                            #find egp
-                            egp = int(name[name.find("_egp=") + 5: name.find("_rl=")])
-
-                            #find rl
-                            rl = int(name[name.find("_rl=") + 4: name.find("_CxCy")])
+                            #find egp rl
+                            egp = 100
+                            rl = 0
+                            if name.find("_egp=") >= 0 and name.find("_rl=") >= 0 and name.find("_CxCy=") >= 0:
+                                egp = int(name[name.find("_egp=") + 5: name.find("_rl=")])
+                                rl = int(name[name.find("_rl=") + 4: name.find("_CxCy")])
 
                             if GOOD and egp < 80 or rl > 0:
                                 continue
@@ -257,6 +260,10 @@ def read_bins_toCSV(bin_dir, out_path, width, height, low_endian, FORMAT = 0, GO
                             bds_name = name.replace("Img16b", "Img16bBkg")
                             bds = os.path.join(root, bds_name)
 
+                            b = os.path.exists(img)
+                            b = os.path.exists(bk)
+                            b = os.path.exists(ipp)
+                            b = os.path.exists(bds)
                             if os.path.exists(img) is False or os.path.exists(bk) is False or os.path.exists(ipp) is False or os.path.exists(bds) is False:
                                 continue
 
@@ -266,6 +273,48 @@ def read_bins_toCSV(bin_dir, out_path, width, height, low_endian, FORMAT = 0, GO
     print("img_list size is {}".format(count))
     return
 
+def parse_genuines(gen_file):
+    with open(gen_file, 'r') as file:
+        all_lines = file.readlines()
+
+    data = []
+    for line in all_lines:
+        if line[0:1] == "#":
+            continue
+        match = re.findall(r"\s*([0-9]+)\s*", line)
+        if len(match) >= 23:
+            info = dict()
+            info['enroll'] = match[0] + match[1] + match[2]
+            info['verify'] = match[3] + match[4] + match[5]
+            info['match'] = match[6]
+            info['score'] = match[11]
+            data.append(info)
+    return data
+
+def run_perf_sum_score(test_folder, org = False):
+    # write index file
+    write_fpdboncex_cmd = "python ..\\read_sys_file\\generate_4folder.py {} > {}\\i.fpdbindex".format(test_folder, test_folder)
+    os.system(write_fpdboncex_cmd)
+
+    # execute perf
+    key = "tst"
+    if org:
+        key = "org"
+    output_perf = ".\\test\\{}".format(key)
+    if os.path.exists(output_perf) and org is False:
+        shutil.rmtree(output_perf)
+    perf_cmd = "..\\PerfEval_win_64.exe -skip -rs={} -n=test -db_mask -Aeval.inverted_mask=1 -improve_dry=94 -latency_adjustment=0 -algo=egistec_200x200_cardo_3PG_CH1JSC_H -tp=image -api=mobile -ver_type=dec -far=1:100K -ms=allx:ogi -enr=1000of15+g -div=1000 -Cmaxtsize=1024000 -ver_update=gen -scorefiles=1 -static_pattern_detect -threads=1 -Agen.aperture.radius=120 -Agen.aperture.x=107 -Agen.aperture.y=87  \"{}\\i.fpdbindex\" > perf_info.txt".format(key, test_folder)
+    os.system(perf_cmd)
+
+    # read genuines.txt
+    genuines_path = output_perf + "\\genuines.txt"
+    genuines_info = parse_genuines(genuines_path)
+    sum_score = 0
+    score_array = []
+    for info in genuines_info:
+        sum_score += int(info['score'])
+        score_array.append(int(info['score']))
+    return sum_score, score_array
 
 if __name__ == '__main__':
     pass
