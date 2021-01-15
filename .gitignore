@@ -6,3 +6,5 @@ model/*
 *.png
 *.csv
 *.pth
+*.txt
+*.json

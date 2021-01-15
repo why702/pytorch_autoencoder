@@ -1,3 +1,0 @@
-%score    #genuines   #impostors
-     0            1          161
-     1          160            0
