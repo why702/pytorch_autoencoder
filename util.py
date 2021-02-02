@@ -316,5 +316,12 @@ def run_perf_sum_score(test_folder, org = False):
         score_array.append(int(info['score']))
     return sum_score, score_array
 
+def show_ndarray(img, name):
+    img = np.float32(img)
+    norm = (img - np.min(img)) / (np.max(img) - np.min(img)) * 255
+    norm = cv2.normalize(src=img, dst=None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8UC1)
+    cv2.imshow(name, norm)
+    cv2.waitKey(1000)
+
 if __name__ == '__main__':
     pass
