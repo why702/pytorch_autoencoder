@@ -8,6 +8,7 @@ import csv
 import re
 import shutil
 
+
 def read_bin(bin_path, tuple_size=(200, 200), low_endian=True):
     f = open(bin_path, "r")
     byte = np.fromfile(f, dtype=np.uint16)
@@ -17,6 +18,7 @@ def read_bin(bin_path, tuple_size=(200, 200), low_endian=True):
             b = struct.pack('>H', byte[i])
             byte[i] = struct.unpack('H', b)[0]
     return byte.reshape(tuple_size)
+
 
 def read_8bit_bin(bin_path, tuple_size=(200, 200), low_endian=True):
     f = open(bin_path, "r")
@@ -112,7 +114,7 @@ def LPF_FWHM(byte, LPF):
     # Apply localization kernel to the original image to reduce noise
     Image_orig_f = ((np.fft.fft2(byte)))
     expo = np.fft.fftshift(
-        np.exp(-np.power((np.divide(RHO, math.sqrt((LPF**2) /
+        np.exp(-np.power((np.divide(RHO, math.sqrt((LPF ** 2) /
                                                    np.log(2)))), 2)))
     # expo = normalize_ndarray(expo) * 255
     # cv2.imshow('', expo.astype(np.uint8))
@@ -122,7 +124,8 @@ def LPF_FWHM(byte, LPF):
         np.fft.ifft2((np.multiply(Image_orig_f, expo))))
     return Image_orig_filtered
 
-def read_bins(bin_dir, width, height, low_endian, FORMAT = 0):
+
+def read_bins(bin_dir, width, height, low_endian, FORMAT=0):
     img_list = []
     bk_list = []
     ipp_list = []
@@ -158,10 +161,10 @@ def read_bins(bin_dir, width, height, low_endian, FORMAT = 0):
 
                     if name.find("_Img16b_") != -1:
 
-                        #find et
+                        # find et
                         et = name[name.find("_et=") + 4: name.find("_hc=")]
 
-                        #find bk
+                        # find bk
                         mi = name[name.find("mica=") + 5: name.find("mica=") + 7]
 
                         if root.find("enroll") != -1 and mi == "00" and need_bk:
@@ -194,7 +197,8 @@ def read_bins(bin_dir, width, height, low_endian, FORMAT = 0):
     print("img_list size is {}".format(len(img_list)))
     return img_list, bk_list, ipp_list, bds_list
 
-def read_bins_toCSV(bin_dir, out_path, width, height, low_endian, FORMAT = 0, GOOD = False):
+
+def read_bins_toCSV(bin_dir, out_path, width, height, low_endian, FORMAT=0, GOOD=False):
     BK_et = 0
     need_bk = True
     count = 0
@@ -225,13 +229,13 @@ def read_bins_toCSV(bin_dir, out_path, width, height, low_endian, FORMAT = 0, GO
 
                         if name.find("_Img16b_") != -1:
 
-                            #find et
+                            # find et
                             et = name[name.find("_et=") + 4: name.find("_hc=")]
 
-                            #find mica
+                            # find mica
                             mi = name[name.find("mica=") + 5: name.find("mica=") + 7]
 
-                            #find egp rl
+                            # find egp rl
                             egp = 100
                             rl = 0
                             if name.find("_egp=") >= 0 and name.find("_rl=") >= 0 and name.find("_CxCy=") >= 0:
@@ -264,7 +268,8 @@ def read_bins_toCSV(bin_dir, out_path, width, height, low_endian, FORMAT = 0, GO
                             b = os.path.exists(bk)
                             b = os.path.exists(ipp)
                             b = os.path.exists(bds)
-                            if os.path.exists(img) is False or os.path.exists(bk) is False or os.path.exists(ipp) is False or os.path.exists(bds) is False:
+                            if os.path.exists(img) is False or os.path.exists(bk) is False or os.path.exists(
+                                    ipp) is False or os.path.exists(bds) is False:
                                 continue
 
                             writer.writerow([img, bk, ipp, bds])
@@ -272,6 +277,7 @@ def read_bins_toCSV(bin_dir, out_path, width, height, low_endian, FORMAT = 0, GO
 
     print("img_list size is {}".format(count))
     return
+
 
 def parse_genuines(gen_file):
     with open(gen_file, 'r') as file:
@@ -291,9 +297,11 @@ def parse_genuines(gen_file):
             data.append(info)
     return data
 
-def run_perf_sum_score(test_folder, org = False):
+
+def run_perf_sum_score(test_folder, org=False):
     # write index file
-    write_fpdboncex_cmd = "python ..\\read_sys_file\\generate_4folder.py {} > {}\\i.fpdbindex".format(test_folder, test_folder)
+    write_fpdboncex_cmd = "python ..\\read_sys_file\\generate_4folder.py {} > {}\\i.fpdbindex".format(test_folder,
+                                                                                                      test_folder)
     os.system(write_fpdboncex_cmd)
 
     # execute perf
@@ -303,7 +311,8 @@ def run_perf_sum_score(test_folder, org = False):
     output_perf = ".\\test\\{}".format(key)
     if os.path.exists(output_perf) and org is False:
         shutil.rmtree(output_perf)
-    perf_cmd = "..\\PerfEval_win_64.exe -skip -rs={} -n=test -db_mask -Aeval.inverted_mask=1 -improve_dry=94 -latency_adjustment=0 -algo=egistec_200x200_cardo_3PG_CH1JSC_H -tp=image -api=mobile -ver_type=dec -far=1:100K -ms=allx:ogi -enr=1000of15+g -div=1000 -Cmaxtsize=1024000 -ver_update=gen -scorefiles=1 -static_pattern_detect -threads=1 -Agen.aperture.radius=120 -Agen.aperture.x=107 -Agen.aperture.y=87  \"{}\\i.fpdbindex\" > perf_info.txt".format(key, test_folder)
+    perf_cmd = "..\\PerfEval_win_64.exe -skip -rs={} -n=test -db_mask -Aeval.inverted_mask=1 -improve_dry=94 -latency_adjustment=0 -algo=egistec_200x200_cardo_3PG_CH1JSC_H -tp=image -api=mobile -ver_type=dec -far=1:100K -ms=allx:ogi -enr=1000of15+g -div=1000 -Cmaxtsize=1024000 -ver_update=gen -scorefiles=1 -static_pattern_detect -threads=1 -Agen.aperture.radius=120 -Agen.aperture.x=107 -Agen.aperture.y=87  \"{}\\i.fpdbindex\" > perf_info.txt".format(
+        key, test_folder)
     os.system(perf_cmd)
 
     # read genuines.txt
@@ -316,12 +325,59 @@ def run_perf_sum_score(test_folder, org = False):
         score_array.append(int(info['score']))
     return sum_score, score_array
 
+
 def show_ndarray(img, name):
     img = np.float32(img)
     norm = (img - np.min(img)) / (np.max(img) - np.min(img)) * 255
     norm = cv2.normalize(src=img, dst=None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8UC1)
     cv2.imshow(name, norm)
     cv2.waitKey(1000)
+
+
+def pattern_interpolation(img, strx, stry, endx, endy):
+    for i in range(stry, endy, 30):
+        for j in range(strx, endx, 30):
+            for k in range(0, 9, 4):
+                for l in range(0, 8, 7):
+                    pos_x0 = j + k
+                    pos_y0 = i + l
+                    pos_x1 = j + k + 1
+                    pos_y1 = i + l + 1
+                    pos_x2 = j + k + 0
+                    pos_y2 = i + l + 2
+                    sum0 = (img[pos_y0 - 1, pos_x0 - 1] +
+                            img[pos_y0 + 0, pos_x0 - 1] +
+                            img[pos_y0 + 1, pos_x0 - 1] +
+                            img[pos_y0 - 1, pos_x0 + 0] +
+                            img[pos_y0 + 1, pos_x0 + 0] +
+                            img[pos_y0 - 1, pos_x0 + 1] +
+                            img[pos_y0 + 0, pos_x0 + 1]) / 7
+                    sum1 = (img[pos_y1 + 0, pos_x1 - 1] +
+                            img[pos_y1 - 1, pos_x1 + 0] +
+                            img[pos_y1 + 1, pos_x1 + 0] +
+                            img[pos_y1 - 1, pos_x1 + 1] +
+                            img[pos_y1 + 0, pos_x1 + 1] +
+                            img[pos_y1 + 1, pos_x1 + 1]) / 6
+                    sum2 = (img[pos_y2 - 1, pos_x2 - 1] +
+                            img[pos_y2 + 0, pos_x2 - 1] +
+                            img[pos_y2 + 1, pos_x2 - 1] +
+                            img[pos_y2 - 1, pos_x2 + 0] +
+                            img[pos_y2 + 1, pos_x2 + 0] +
+                            img[pos_y2 + 0, pos_x2 + 1] +
+                            img[pos_y2 + 1, pos_x2 + 1]) / 7
+                    img[pos_x0, pos_y0] = sum0
+                    img[pos_x1, pos_y1] = sum1
+                    img[pos_x2, pos_y2] = sum2
+
+
+def mss_interpolation(img, width, height):
+    pattern_interpolation(img, 16, 16, width - 20, height - 20)
+    pattern_interpolation(img, 31, 31, width, height)
+    # #721
+    # pattern_interpolation(img, 12, 12, width - 20, height - 20)
+    # pattern_interpolation(img, 27, 27, width - 20, height - 20)
+    # pattern_interpolation(img, 12, 162, width - 20, 13)
+
 
 if __name__ == '__main__':
     pass
