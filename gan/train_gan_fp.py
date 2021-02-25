@@ -74,9 +74,9 @@ if __name__ == '__main__':
         data_get_time = 0
         model_update_time = 0
         data_start_time = time.time()
-        for i, data in enumerate(data_loader, 0):
+        for i, (img, label) in enumerate(data_loader, 0):
 
-            real_data = data[0].to(device)
+            real_data = label.to(device)
             data_get_time += time.time() - data_start_time
 
             model_start_time = time.time()

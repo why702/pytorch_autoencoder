@@ -18,21 +18,21 @@ class Discriminator(nn.Module):
         self.ngpu = num_gpu
         self.main = nn.Sequential(
 
-            # input is (num_channels) x 65 x 87 (height goes first, when specifying tuples)
-            spectral_norm(nn.Conv2d(num_channels, ndf, kernel_size=3, stride=2, padding=0)),
+            # input is (num_channels) x 216 x 216 (height goes first, when specifying tuples)
+            spectral_norm(nn.Conv2d(num_channels, ndf, kernel_size=3, stride=2, padding=1)),
             nn.LeakyReLU(0.1, inplace=True),
             # When dilation and padding is 1: ((in + 2p - (k - 1) - 1) / s) + 1
 
-            # state: (ndf*2) x 33 x 44
-            spectral_norm(nn.Conv2d(ndf, ndf * 2, kernel_size=3, stride=2, padding=0)),
+            # state: (ndf*2) x 108 x 108
+            spectral_norm(nn.Conv2d(ndf, ndf * 2, kernel_size=3, stride=2, padding=1)),
             nn.LeakyReLU(0.1, inplace=True),
-            # state: (ndf*4) x 17 x 22
-            spectral_norm(nn.Conv2d(ndf * 2, ndf * 4, kernel_size=3, stride=2, padding=0)),
+            # state: (ndf*4) x 54 x 54
+            spectral_norm(nn.Conv2d(ndf * 2, ndf * 4, kernel_size=3, stride=2, padding=1)),
             nn.LeakyReLU(0.1, inplace=True),
-            # state:  (ndf*4) x 9 x 11
+            # state:  (ndf*4) x 27 x 27
             spectral_norm(nn.Conv2d(ndf * 4, ndf * 8, kernel_size=3, stride=3, padding=0)),
             nn.LeakyReLU(0.1, inplace=True),
-            # state:  (ndf*8) x 5 x 6
+            # state:  (ndf*8) x 9 x 9
             spectral_norm(nn.Conv2d(ndf * 8, ndf * 16, kernel_size=3, stride=3, padding=0)),
             nn.LeakyReLU(0.1, inplace=True),
             # state:  (ndf*8) x 3 x 3

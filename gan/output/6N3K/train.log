@@ -1,6 +1,0 @@
-INFO:root:Directory output\6N3K created, training output will be saved here
-INFO:root:Copied config file!
-INFO:root:Copied the Generator and Discriminator files
-INFO:root:Data size is 8595 images
-INFO:root:Is GPU available? True
-INFO:root:Starting Training Loop...

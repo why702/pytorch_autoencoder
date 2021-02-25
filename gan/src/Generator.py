@@ -31,15 +31,15 @@ class Generator(nn.Module):
             nn.BatchNorm2d(ngf * 4),
             nn.ReLU(True),
             # state size: (ngf*2) x 27 x 27
-            spectral_norm(nn.ConvTranspose2d(ngf * 4, ngf * 2, kernel_size=3, stride=2, padding=0)),
+            spectral_norm(nn.ConvTranspose2d(ngf * 4, ngf * 2, kernel_size=3, stride=2, padding=1, output_padding=1)),
             nn.BatchNorm2d(ngf * 2),
             nn.ReLU(True),
             # state size: (ngf*2) x 54 x 54
-            spectral_norm(nn.ConvTranspose2d(ngf * 2, ngf, kernel_size=3, stride=2, padding=0)),
+            spectral_norm(nn.ConvTranspose2d(ngf * 2, ngf, kernel_size=3, stride=2, padding=1, output_padding=1)),
             nn.BatchNorm2d(ngf),
             nn.ReLU(True),
             # state size: (ngf) x 108 x 108
-            spectral_norm(nn.ConvTranspose2d(ngf, num_channels, kernel_size=3, stride=2, padding=0)),
+            spectral_norm(nn.ConvTranspose2d(ngf, num_channels, kernel_size=3, stride=2, padding=1, output_padding=1)),
             nn.Tanh()
             # state size: (nc) x 216 x 216
         )
