@@ -19,14 +19,14 @@ from src import Generator, Discriminator, create_model
 # Writes text file with information of the generator and discriminator instances
 def save_architecture(generator, discriminator, save_dir, config):
 
-    image_height = int(config['CONFIGS']['image_height'])
-    image_width = int(config['CONFIGS']['image_width'])
+    model_height = int(config['CONFIGS']['model_height'])
+    model_width = int(config['CONFIGS']['model_width'])
     num_channels = int(config['CONFIGS']['num_channels'])
     latent_vector_size = int(config['CONFIGS']['latent_vector_size'])
 
     gen_model_stats = summary(generator, input_size=(latent_vector_size, 1, 1))
     gen_summary_str = str(gen_model_stats)
-    discrim_model_stats = summary(discriminator, input_size=(num_channels, image_height, image_width))
+    discrim_model_stats = summary(discriminator, input_size=(num_channels, model_height, model_width))
     discrim_summary_str = str(discrim_model_stats)
 
     with open(os.path.join(save_dir, 'architecture.txt'), 'w', encoding='utf-8') as text_file:

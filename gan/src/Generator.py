@@ -23,25 +23,25 @@ class Generator(nn.Module):
             nn.BatchNorm2d(ngf * 16),
             nn.ReLU(True),
             # state size: (ngf*8) x 3 x 3
-            spectral_norm(nn.ConvTranspose2d(ngf * 16, ngf * 8, kernel_size=3, stride=2, padding=1)),
+            spectral_norm(nn.ConvTranspose2d(ngf * 16, ngf * 8, kernel_size=3, stride=3, padding=0)),
             nn.BatchNorm2d(ngf * 8),
             nn.ReLU(True),
-            # state size: (ngf*4) x 5 x 6
-            spectral_norm(nn.ConvTranspose2d(ngf * 8, ngf * 4, kernel_size=3, stride=2, padding=1)),
+            # state size: (ngf*4) x 9 x 9
+            spectral_norm(nn.ConvTranspose2d(ngf * 8, ngf * 4, kernel_size=3, stride=3, padding=0)),
             nn.BatchNorm2d(ngf * 4),
             nn.ReLU(True),
-            # state size: (ngf*2) x 9 x 11
-            spectral_norm(nn.ConvTranspose2d(ngf * 4, ngf * 2, kernel_size=3, stride=2, padding=1)),
+            # state size: (ngf*2) x 27 x 27
+            spectral_norm(nn.ConvTranspose2d(ngf * 4, ngf * 2, kernel_size=3, stride=2, padding=0)),
             nn.BatchNorm2d(ngf * 2),
             nn.ReLU(True),
-            # state size: (ngf*2) x 17 x 22
-            spectral_norm(nn.ConvTranspose2d(ngf * 2, ngf, kernel_size=3, stride=3, padding=1)),
+            # state size: (ngf*2) x 54 x 54
+            spectral_norm(nn.ConvTranspose2d(ngf * 2, ngf, kernel_size=3, stride=2, padding=0)),
             nn.BatchNorm2d(ngf),
             nn.ReLU(True),
-            # state size: (ngf) x 33 x 44
-            spectral_norm(nn.ConvTranspose2d(ngf, num_channels, kernel_size=3, stride=3, padding=1)),
+            # state size: (ngf) x 108 x 108
+            spectral_norm(nn.ConvTranspose2d(ngf, num_channels, kernel_size=3, stride=2, padding=0)),
             nn.Tanh()
-            # state size: (nc) x 65 x 87
+            # state size: (nc) x 216 x 216
         )
 
     def forward(self, generator_input):
