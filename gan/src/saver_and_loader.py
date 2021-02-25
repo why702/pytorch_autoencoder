@@ -53,10 +53,10 @@ def save_model(generator, discriminator, generator_path, discriminator_path):
 # Takes in pytorch's data-loader, and saves the training images in given directory
 def save_training_images(loader, save_dir, img_name):
     # Save training images
-    real_batch = next(iter(loader))
+    img, label = next(iter(loader))
 
     # batch_images is of size (batch_size, num_channels, height, width)
-    batch_images = real_batch[0]
+    batch_images = label
     save_path = os.path.join(save_dir, img_name)
     save_images(batch_images, save_path)
 

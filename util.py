@@ -21,14 +21,18 @@ def read_bin(bin_path, tuple_size=(200, 200), low_endian=True):
 
 
 def read_8bit_bin(bin_path, tuple_size=(200, 200), low_endian=True):
-    f = open(bin_path, "r")
-    byte = np.fromfile(f, dtype=np.uint8)
+    if os.path.splitext(bin_path)[1] == '.png':
+        img = cv2.imread(bin_path, 0)
+        return img
+    else:
+        f = open(bin_path, "r")
+        byte = np.fromfile(f, dtype=np.uint8)
 
-    if low_endian == False:
-        for i in range(len(byte)):
-            b = struct.pack('>H', byte[i])
-            byte[i] = struct.unpack('H', b)[0]
-    return byte.reshape(tuple_size)
+        if low_endian == False:
+            for i in range(len(byte)):
+                b = struct.pack('>H', byte[i])
+                byte[i] = struct.unpack('H', b)[0]
+        return byte.reshape(tuple_size)
 
 
 def read_bin_flatten(bin_path, low_endian=True):
@@ -125,7 +129,18 @@ def LPF_FWHM(byte, LPF):
     return Image_orig_filtered
 
 
-def read_bins(bin_dir, width, height, low_endian, FORMAT=0):
+def find_bk_bins(bin_dir):
+    pair_EtBk = []
+    for root, dirs, files in os.walk(bin_dir, topdown=False):
+        for name in files:
+            pos = name.lower().find('_bkg.bin')
+            if pos >= 0:
+                et = int(name[0:pos])
+                pair_EtBk.append((et, os.path.join(root, name)))
+    return pair_EtBk
+
+
+def read_bins(bin_dir, width, height, low_endian, RBS=False):
     img_list = []
     bk_list = []
     ipp_list = []
@@ -139,23 +154,26 @@ def read_bins(bin_dir, width, height, low_endian, FORMAT=0):
 
     for root, dirs, files in os.walk(bin_dir, topdown=False):
         for name in files:
-            # print(os.path.join(root, name))
-
             if os.path.splitext(name)[1] == '.bin':
+                if RBS:
+                    if root.find("image_raw") != -1:
+                        img = read_bin(os.path.join(root, name))
 
-                if FORMAT == 702:
-                    # if root.find("image_raw") != -1:
-                    #     img = util.read_bin(os.path.join(root, name),
-                    #                         (height, width), low_endian)
-                    #     img = np.pad(img, ((2, 2), (1, 1)), 'reflect')
-                    # if img is None:
-                    #     continue
-                    #
-                    # # diff = util.normalize_ndarray(img) * 255
-                    # # cv2.imshow("", diff.astype(np.uint8))
-                    # # cv2.waitKey()
-                    #
-                    # self.input_list.append(img)
+                        ipp_name = name.replace("image_raw", "image_bin")
+                        ipp = read_8bit_bin(os.path.join(root, ipp_name))
+
+                        bds_name = name.replace("image_raw", "image_bkg")
+                        bds = read_bin(os.path.join(root, bds_name))
+
+                        # if img is None or bk is None or ipp is None or bds is None:
+                        #     continue
+                        if img is None or ipp is None or bds is None:
+                            continue
+
+                        img_list.append(img)
+                        bk_list.append(bk)
+                        ipp_list.append(ipp)
+                        bds_list.append(bds)
                     pass
                 else:
 
@@ -198,10 +216,15 @@ def read_bins(bin_dir, width, height, low_endian, FORMAT=0):
     return img_list, bk_list, ipp_list, bds_list
 
 
-def read_bins_toCSV(bin_dir, out_path, width, height, low_endian, FORMAT=0, GOOD=False):
+def read_bins_toCSV(bin_dir, out_path, width, height, low_endian, RBS=False, GOOD=False):
     BK_et = 0
     need_bk = True
     count = 0
+    img = None
+    bk = None
+    ipp = None
+    bds = None
+    pair_EtBk = find_bk_bins(bin_dir)
 
     with open(out_path, 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
@@ -211,20 +234,35 @@ def read_bins_toCSV(bin_dir, out_path, width, height, low_endian, FORMAT=0, GOOD
 
                 if os.path.splitext(name)[1] == '.bin':
 
-                    if FORMAT == 702:
-                        # if root.find("image_raw") != -1:
-                        #     img = util.read_bin(os.path.join(root, name),
-                        #                         (height, width), low_endian)
-                        #     img = np.pad(img, ((2, 2), (1, 1)), 'reflect')
-                        # if img is None:
-                        #     continue
-                        #
-                        # # diff = util.normalize_ndarray(img) * 255
-                        # # cv2.imshow("", diff.astype(np.uint8))
-                        # # cv2.waitKey()
-                        #
-                        # self.input_list.append(img)
-                        pass
+                    if RBS:
+                        if root.find("image_raw") != -1:
+                            img = os.path.join(root, name)
+
+                            ipp_root = root.replace("image_raw", "image_bin")
+                            ipp_name = name.replace("bin", "png")
+                            ipp = os.path.join(ipp_root, ipp_name)
+
+                            bds_root = root.replace("image_raw", "image_bkg")
+                            bds = os.path.join(bds_root, name)
+
+                            bk = None
+                            pos = name.lower().find('_et=')
+                            if pair_EtBk is not [] and pos >= 0:
+                                sEt = name.lower()[pos + 4:]
+                                pos_end = sEt.find('_')
+                                iEt = int(float(sEt[0:pos_end]) * 1000)
+                                for et_, bk_ in pair_EtBk:
+                                    if et_ == iEt:
+                                        bk = bk_
+                            if bk is None:
+                                bk = img
+
+                            if os.path.exists(img) is False or os.path.exists(
+                                    ipp) is False or os.path.exists(bds) is False:
+                                continue
+
+                            writer.writerow([img, bk, ipp, bds])
+                            count += 1
                     else:
 
                         if name.find("_Img16b_") != -1:
@@ -264,10 +302,6 @@ def read_bins_toCSV(bin_dir, out_path, width, height, low_endian, FORMAT=0, GOOD
                             bds_name = name.replace("Img16b", "Img16bBkg")
                             bds = os.path.join(root, bds_name)
 
-                            b = os.path.exists(img)
-                            b = os.path.exists(bk)
-                            b = os.path.exists(ipp)
-                            b = os.path.exists(bds)
                             if os.path.exists(img) is False or os.path.exists(bk) is False or os.path.exists(
                                     ipp) is False or os.path.exists(bds) is False:
                                 continue

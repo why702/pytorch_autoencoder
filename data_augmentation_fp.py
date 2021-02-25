@@ -10,7 +10,7 @@ import pandas as pd
 class FingerprintDataset(Data.Dataset):
     """Face Landmarks dataset."""
 
-    def __init__(self, root_dir, csv_file, img_width, img_height, pad_width, transform=None):
+    def __init__(self, root_dir, csv_file, img_width, img_height, pad_width, RBS=False):
         """
         Args:
             csv_file (string): Path to the csv file with annotations.
@@ -21,7 +21,8 @@ class FingerprintDataset(Data.Dataset):
         self.width = img_width
         self.height = img_height
         self.pad_width = pad_width
-        util.read_bins_toCSV(root_dir, csv_file, img_width, img_height, True)
+        self.RBS = RBS
+        util.read_bins_toCSV(root_dir, csv_file, img_width, img_height, RBS, True)
 
         self.landmarks_frame = pd.read_csv(csv_file)
         self.size = self.landmarks_frame.shape[0]
@@ -71,7 +72,7 @@ class FingerprintDataset(Data.Dataset):
         bk = util.read_bin(self.landmarks_frame.iloc[idx, 1], (self.width, self.height), True)
         ipp = util.read_8bit_bin(self.landmarks_frame.iloc[idx, 2], (self.width, self.height), True)
         # diff = util.subtract(image, bk)
-        util.mss_interpolation(image, self.width, self.height)
+        util.mss_interpolation(image.astype('float32'), self.width, self.height)
         # plt.imshow(image)
         # plt.show()
         diff = image
@@ -99,7 +100,7 @@ class FingerprintDataset(Data.Dataset):
         bk = util.read_bin(self.landmarks_frame.iloc[idx, 1], (self.width, self.height), True)
         ipp_path = self.landmarks_frame.iloc[idx, 2]
         # diff = util.subtract(image, bk)
-        util.mss_interpolation(image, self.width, self.height)
+        util.mss_interpolation(image.astype('float32'), self.width, self.height)
         diff = image
 
         # # normalize
