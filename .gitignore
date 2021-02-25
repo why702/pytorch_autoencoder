@@ -9,3 +9,4 @@ gan/output/*
 *.pth
 *.txt
 *.json
+__pycache__
