@@ -3,6 +3,7 @@ model/*
 data/*
 runs/*
 model/*
+gan/output/*
 *.png
 *.csv
 *.pth
