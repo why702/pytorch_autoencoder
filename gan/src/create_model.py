@@ -14,7 +14,6 @@ import torchvision.transforms as transforms
 
 from src import Generator, Discriminator
 from data_augmentation_fp import FingerprintDataset
-from data_augmentation_fp import FingerprintDataset
 
 
 # Create the data-set using an image folder and fits the format given in config
@@ -44,7 +43,7 @@ def create_data_loader(config, data_dir):
     #                                            shuffle=True, num_workers=n_workers)
 
     data_set = FingerprintDataset(root_dir=data_dir, csv_file='list.csv', img_width=image_width, img_height=image_height,
-                                 pad_width=np_pad)
+                                 pad_width=np_pad, )
     torch_loader = torch.utils.data.DataLoader(data_set, batch_size=batch_size, shuffle=True, num_workers=n_workers)
 
     return torch_loader
