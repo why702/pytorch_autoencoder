@@ -10,8 +10,8 @@ Purpose: Train the GAN (Generative Adversarial Network) model
 from __future__ import print_function
 import torch
 
-from src import ini_parser, saver_and_loader, os_helper, create_model
-from src.gan_model import GanModel
+from gan.src import ini_parser, saver_and_loader, os_helper, create_model
+from gan.src.gan_model import GanModel
 
 import shutil
 import logging

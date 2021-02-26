@@ -9,7 +9,7 @@ Specify the run folder, reads the config file to recreate the model, and loads t
 """
 
 import torch
-from src import ini_parser, saver_and_loader, os_helper
+from gan.src import ini_parser, saver_and_loader, os_helper
 import os
 
 run_dir = 'output/7CXI'

@@ -13,7 +13,7 @@ import torch
 import torchvision.utils as torch_utils
 from torchsummary import summary
 
-from src import Generator, Discriminator, create_model
+from gan.src import Generator, Discriminator, create_model
 
 
 # Writes text file with information of the generator and discriminator instances

@@ -7,18 +7,18 @@ Created on Thu May 17
 Purpose: Functions that are used to create/init the GAN model
 """
 
+import sys
+
 import torch
 import torch.nn as nn
-import torchvision.datasets as torch_data_set
-import torchvision.transforms as transforms
+from gan.src import Generator, Discriminator
 
-from src import Generator, Discriminator
-from data_augmentation_fp import FingerprintDataset
+sys.path.append("../pytorch_autoencoder")
+from utils.data_augmentation_fp import FingerprintDataset
 
 
 # Create the data-set using an image folder and fits the format given in config
 def create_data_loader(config, data_dir):
-
     image_width = int(config['CONFIGS']['image_width'])
     image_height = int(config['CONFIGS']['image_height'])
     model_width = int(config['CONFIGS']['model_width'])
@@ -37,13 +37,15 @@ def create_data_loader(config, data_dir):
     n_workers = int(config['CONFIGS']['workers'])
     pad_width = int((model_width - image_width) / 2)
     pad_height = int((model_height - image_height) / 2)
-    np_pad = ((pad_height, model_height - image_height - pad_height), (pad_width, model_width - image_width - pad_width))
+    np_pad = (
+    (pad_height, model_height - image_height - pad_height), (pad_width, model_width - image_width - pad_width))
     # # Create the data-loader
     # torch_loader = torch.utils.data.DataLoader(data_set, batch_size=batch_size,
     #                                            shuffle=True, num_workers=n_workers)
 
-    data_set = FingerprintDataset(root_dir=data_dir, csv_file='list.csv', img_width=image_width, img_height=image_height,
-                                 pad_width=np_pad, )
+    data_set = FingerprintDataset(root_dir=data_dir, csv_file='list.csv', img_width=image_width,
+                                  img_height=image_height,
+                                  pad_width=np_pad, )
     torch_loader = torch.utils.data.DataLoader(data_set, batch_size=batch_size, shuffle=True, num_workers=n_workers)
 
     return torch_loader
@@ -51,7 +53,6 @@ def create_data_loader(config, data_dir):
 
 # Creates the generator and discriminator using the configuration file
 def create_gan_instances(config):
-
     n_gpu = int(config['CONFIGS']['ngpu'])
     latent_vector_size = int(config['CONFIGS']['latent_vector_size'])
     ngf = int(config['CONFIGS']['ngf'])
