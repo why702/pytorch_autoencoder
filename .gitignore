@@ -3,9 +3,9 @@ model/*
 data/*
 runs/*
 model/*
-gan/output/*
-autoencoder/runs/*
-autoencoder/dc_img/*
+*/output/*
+*/runs/*
+*/dc_img/*
 *.png
 *.csv
 *.pth
