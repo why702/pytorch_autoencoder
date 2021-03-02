@@ -11,7 +11,7 @@ import sys
 
 import torch
 import torch.nn as nn
-from gan.src import Generator, Discriminator
+from src import Generator, Discriminator
 
 sys.path.append("../pytorch_autoencoder")
 from utils.data_augmentation_fp import FingerprintDataset
@@ -63,7 +63,7 @@ def create_gan_instances(config):
 
     # Create the generator and discriminator
     generator = Generator.Generator(n_gpu, latent_vector_size, ngf, num_channels).to(device)
-    discriminator = Discriminator.Discriminator(n_gpu, ndf, num_channels).to(device)
+    discriminator = Discriminator.Discriminator(n_gpu, latent_vector_size, ndf, num_channels).to(device)
 
     generator = _handle_multiple_gpus(generator, n_gpu, device)
     discriminator = _handle_multiple_gpus(discriminator, n_gpu, device)

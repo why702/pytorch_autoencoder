@@ -13,7 +13,7 @@ from torch.nn.utils import spectral_norm
 
 
 class Discriminator(nn.Module):
-    def __init__(self, num_gpu, ndf, num_channels):
+    def __init__(self, num_gpu, latent_vector_size, ndf, num_channels):
         super(Discriminator, self).__init__()
         self.ngpu = num_gpu
         self.main = nn.Sequential(
@@ -36,7 +36,7 @@ class Discriminator(nn.Module):
             spectral_norm(nn.Conv2d(ndf * 8, ndf * 16, kernel_size=3, stride=3, padding=0)),
             nn.LeakyReLU(0.1, inplace=True),
             # state:  (ndf*8) x 3 x 3
-            spectral_norm(nn.Conv2d(ndf * 16, 1, kernel_size=3, stride=1)),
+            spectral_norm(nn.Conv2d(ndf * 16, latent_vector_size, kernel_size=3, stride=1)),
             # Output is 1 x 1 x 1
             nn.Sigmoid()
         )

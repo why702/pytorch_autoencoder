@@ -14,7 +14,9 @@ import torch.optim as optim
 
 class GanModel:
 
-    criterion = nn.BCELoss()
+    criterion_BCE = nn.BCELoss()
+    # criterion_MSE = nn.MSELoss(reduce=True, size_average=False)
+    criterion_MSE = nn.MSELoss()
     fake_label, real_label = 0, 1
 
     def __init__(self, generator, discriminator, device, config):
@@ -42,7 +44,7 @@ class GanModel:
 
         # Note discriminator output must be 1 integer, or else criterion will throw an error
         output = self.netD(real_data).view(-1)
-        errD_real = GanModel.criterion(output, label)
+        errD_real = GanModel.criterion_BCE(output, label)
         # Calculate gradients for D in backward pass
         errD_real.backward()
         D_x = output.mean().item()
@@ -55,7 +57,7 @@ class GanModel:
         # Classify all fake batch with D
         output = self.netD(fake.detach()).view(-1)
         # Calculate D's loss on the all-fake batch
-        errD_fake = GanModel.criterion(output, label)
+        errD_fake = GanModel.criterion_BCE(output, label)
         # Calculate the gradients for this batch
         errD_fake.backward()
         D_G_z1 = output.mean().item()
@@ -71,13 +73,27 @@ class GanModel:
         label.fill_(GanModel.real_label)  # fake labels are real for generator cost
         # Since we just updated D, perform another forward pass of all-fake batch through D
         output = self.netD(fake).view(-1)
-        errG = GanModel.criterion(output, label)
+        errG = GanModel.criterion_BCE(output, label)
         # Calculate gradients for G
         errG.backward()
         D_G_z2 = output.mean().item()
         # Update G
         self.optimizerG.step()
         return errD, errG, D_x, D_G_z1, D_G_z2
+
+    def autoencorder(self, real_data):
+        self.netD.zero_grad()
+        self.netG.zero_grad()
+
+        output_D = self.netD(real_data)
+        output_G = self.netG(output_D)
+
+        loss_MSE = GanModel.criterion_MSE(output_G, real_data)
+        loss_MSE.backward()
+
+        self.optimizerD.step()
+        self.optimizerG.step()
+        return output_G, loss_MSE
 
     def generate_images(self, noise):
         with torch.no_grad():
