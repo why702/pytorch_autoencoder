@@ -144,6 +144,7 @@ class PerfDataset(Data.Dataset):
 
         self.landmarks_frame = pd.read_csv(csv_file)
         self.size = self.landmarks_frame.shape[0]
+        print("Get {} pairs of image".format(self.size))
 
     def __len__(self):
         return len(self.landmarks_frame)

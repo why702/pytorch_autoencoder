@@ -11,4 +11,5 @@ model/*
 *.pth
 *.txt
 *.json
+*.bin
 __pycache__

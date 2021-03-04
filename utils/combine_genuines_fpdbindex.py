@@ -1,8 +1,9 @@
-import os
-from shutil import copyfile
-import re
-import csv
 import argparse
+import csv
+import os
+import re
+from shutil import copyfile
+
 
 def parse_genuines(gen_file):
     with open(gen_file, 'r') as file:
@@ -21,7 +22,7 @@ def parse_genuines(gen_file):
             info['rotation'] = match[7]
             info['dx'] = match[8]
             info['dy'] = match[9]
-            info['score'] = match[13]
+            info['score'] = match[11]
             data.append(info)
     return data
 
@@ -42,15 +43,18 @@ def parse_index(index_file):
             data.append(info)
     return data
 
+
 def find_path(index_data, id):
     for info in index_data:
         if info['id'] == id:
             return info['path']
 
+
 def find_gen_info(gen_data, id):
     for info in gen_data:
         if info['verify'] == id:
             return info
+
 
 expr = re.compile(
     r"(\S+)\\(\d+)\\(enroll|verify|identify)\\(st|45d|90d|135d)\\([0-9]+\\)*(\S+).png"
@@ -65,16 +69,18 @@ expr_enroll = re.compile(
     r"(\S+)\\(\d+)\\(enroll)\\(\S+).png"
 )
 
+
 def analysis_info(gen_data0, index_data0, output_file):
     root_folder = os.path.dirname(os.path.abspath(output_file))
 
     with open(output_file, 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(
-            ['enroll', 'verify', 'match', 'score', 'path', 'person', 'finger', 'verify', 'quality', 'cond', 'part', 'fr'])
+            ['enroll', 'verify', 'match', 'score', 'path', 'person', 'finger', 'verify', 'quality', 'cond', 'part',
+             'fr'])
         # writer.writerow(
         #     ['person', 'finger', '50', '75', '90', '100'])
-        dicts=[]
+        dicts = []
 
         for info0 in gen_data0:
             verify_id = info0['verify']
@@ -115,27 +121,28 @@ def analysis_info(gen_data0, index_data0, output_file):
                 person = m_e.group(1)
                 finger = int(m_e.group(2))
 
-            #replace
-            person = person.replace("\\","")
-            person = person.replace('np',"")
-            person = person.replace("ipp","")
-            person = person.replace("org","")
-            person = person.replace("md1","")
-            person = person.replace("md2","")
-            person = person.replace("sdk","")
-            person = person.replace("full","")
-            person = person.replace("normal","")
-            person = person.replace("_","")
-            person = person.replace("pcopy","")
-            person = person.replace("copy","")
-            person = person.replace("md3","")
+            # replace
+            person = person.replace("\\", "")
+            person = person.replace('np', "")
+            person = person.replace("ipp", "")
+            person = person.replace("org", "")
+            person = person.replace("md1", "")
+            person = person.replace("md2", "")
+            person = person.replace("sdk", "")
+            person = person.replace("full", "")
+            person = person.replace("normal", "")
+            person = person.replace("_", "")
+            person = person.replace("pcopy", "")
+            person = person.replace("copy", "")
+            person = person.replace("md3", "")
 
             fr = 1
             if info0['match'] == "1":
                 fr = 0
 
             writer.writerow(
-                [info0['enroll'], info0['verify'], info0['match'], info0['score'], path, person, finger, verify, quality, cond, part, fr])
+                [info0['enroll'], info0['verify'], info0['match'], info0['score'], path, person, finger, verify,
+                 quality, cond, part, fr])
 
             # copy image
             if path.find('_md3') >= 0 and info0['match'] == '1':
@@ -194,18 +201,23 @@ def analysis_info(gen_data0, index_data0, output_file):
         # writer.writerow(['person','finger', d50_sum / d50_count, d75_sum / d75_count, d90_sum / d90_count, d100_sum / d100_count])
     pass
 
-def get_pair_info(gen_data0, index_data0, root_dir, output_file):
+
+def get_pair_info(gen_data0, index_data0, root_dir, output_file, GOOD=True):
     root_folder = os.path.dirname(os.path.abspath(output_file))
 
     with open(output_file, 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(
-            ['enroll', 'verify', 'match', 'score', 'rot', 'dx', 'dy', 'enroll_path', 'verify_path', 'person', 'finger', 'verify', 'quality', 'cond', 'part', 'fr'])
+            ['enroll', 'verify', 'match', 'score', 'rot', 'dx', 'dy', 'enroll_path', 'verify_path', 'person', 'finger',
+             'verify', 'quality', 'cond', 'part', 'fr'])
         # writer.writerow(
         #     ['person', 'finger', '50', '75', '90', '100'])
-        dicts=[]
+        dicts = []
 
         for info0 in gen_data0:
+            if GOOD and int(info0['score']) < 20000:
+                continue
+
             enroll_id = info0['enroll']
             verify_id = info0['verify']
 
@@ -246,27 +258,28 @@ def get_pair_info(gen_data0, index_data0, root_dir, output_file):
                 person = m_e.group(1)
                 finger = int(m_e.group(2))
 
-            #replace
-            person = person.replace("\\","")
-            person = person.replace('np',"")
-            person = person.replace("ipp","")
-            person = person.replace("org","")
-            person = person.replace("md1","")
-            person = person.replace("md2","")
-            person = person.replace("sdk","")
-            person = person.replace("full","")
-            person = person.replace("normal","")
-            person = person.replace("_","")
-            person = person.replace("pcopy","")
-            person = person.replace("copy","")
-            person = person.replace("md3","")
+            # replace
+            person = person.replace("\\", "")
+            person = person.replace('np', "")
+            person = person.replace("ipp", "")
+            person = person.replace("org", "")
+            person = person.replace("md1", "")
+            person = person.replace("md2", "")
+            person = person.replace("sdk", "")
+            person = person.replace("full", "")
+            person = person.replace("normal", "")
+            person = person.replace("_", "")
+            person = person.replace("pcopy", "")
+            person = person.replace("copy", "")
+            person = person.replace("md3", "")
 
             fr = 1
             if info0['match'] == "1":
                 fr = 0
 
             writer.writerow(
-                [info0['enroll'], info0['verify'], info0['match'], info0['score'], info0['rotation'], info0['dx'], info0['dx'], enroll_path, verify_path, person, finger, verify, quality, cond, part, fr])
+                [info0['enroll'], info0['verify'], info0['match'], info0['score'], info0['rotation'], info0['dx'],
+                 info0['dx'], enroll_path, verify_path, person, finger, verify, quality, cond, part, fr])
 
             # # copy image
             # if verify_path.find('_md3') >= 0 and info0['match'] == '1':
