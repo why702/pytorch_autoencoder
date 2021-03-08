@@ -1,10 +1,12 @@
-import random
 import os
+import random
+
 import numpy as np
 import pandas as pd
 import torch
 import torch.utils.data as Data
 import torchvision.transforms.functional as TF
+from PIL import Image
 
 import utils.util as util
 from utils.combine_genuines_fpdbindex import parse_genuines, parse_index, get_pair_info
@@ -211,7 +213,7 @@ class PerfDataset(Data.Dataset):
             util.mss_interpolation(enroll_raw.astype('float32'), self.width, self.height)
             util.mss_interpolation(verify_raw.astype('float32'), self.width, self.height)
 
-        # to uint8
+        # normalize
         enroll_raw = ((enroll_raw - np.min(enroll_raw)) / (np.max(enroll_raw) - np.min(enroll_raw))).astype('float32')
         verify_raw = ((verify_raw - np.min(verify_raw)) / (np.max(verify_raw) - np.min(verify_raw))).astype('float32')
         enroll_ipp = enroll_ipp.astype('float32')
@@ -230,6 +232,45 @@ class PerfDataset(Data.Dataset):
 
         return enroll_raw, enroll_ipp, verify_raw, verify_ipp, score
 
+    def get_img(self, img_path):
+        if self.RBS:
+            img_path = img_path.replace("image_bin", "image_raw")
+        else:
+            img_path = img_path.replace("_Img8b_", "_Img16b_")
+        img_path = img_path.replace(".png", ".bin")
 
-if __name__ == '__main__':
-    pass
+        img = util.read_bin(img_path, (self.width, self.height), self.low_endian)
+
+        if self.PI:
+            util.mss_interpolation(img.astype('float32'), self.width, self.height)
+
+        img = ((img - np.min(img)) / (np.max(img) - np.min(img))).astype('float32')
+
+        # padding
+        img = np.pad(img, self.pad_width, 'reflect')
+
+        return img
+
+    def save_img(self, img, output_path):
+        pad_h = self.pad_width[0][0]
+        pad_w = self.pad_width[1][0]
+        # crop
+        img = img[pad_h:self.height, pad_w:self.width]
+
+        # to uint8
+        img = ((img - np.min(img)) * 255 / (np.max(img) - np.min(img))).astype('uint8')
+
+        # save
+        im = Image.fromarray(img)
+        out_dir = os.path.dirname(output_path)
+        if os.path.exists(out_dir) is False:
+            try:
+                os.makedirs(out_dir)
+            except OSError:
+                print("Creation of the directory %s failed" % out_dir)
+            # else:
+            #     print("Successfully created the directory %s " % out_dir)
+        im.save(output_path)
+
+        if __name__ == '__main__':
+            pass
