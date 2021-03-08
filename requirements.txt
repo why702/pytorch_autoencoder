@@ -6,3 +6,4 @@ pandas
 tensorboard
 scikit-image
 torchsummary
+progressbar2

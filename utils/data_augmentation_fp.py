@@ -3,10 +3,13 @@ import random
 
 import numpy as np
 import pandas as pd
+import progressbar
 import torch
 import torch.utils.data as Data
 import torchvision.transforms.functional as TF
 from PIL import Image
+import threading
+from queue import Queue
 
 import utils.util as util
 from utils.combine_genuines_fpdbindex import parse_genuines, parse_index, get_pair_info
@@ -138,6 +141,7 @@ class PerfDataset(Data.Dataset):
         self.RBS = RBS
         self.low_endian = not RBS
         self.PI = PI
+        self.thread = 8
 
         gen_data0 = parse_genuines(gen_file)
         index_data0 = parse_index(index_file)
@@ -147,6 +151,7 @@ class PerfDataset(Data.Dataset):
         self.landmarks_frame = pd.read_csv(csv_file)
         self.size = self.landmarks_frame.shape[0]
         print("Get {} pairs of image".format(self.size))
+        print('perf_score = {}'.format(self.get_perf_score()))
 
     def __len__(self):
         return len(self.landmarks_frame)
@@ -273,13 +278,36 @@ class PerfDataset(Data.Dataset):
         im.save(output_path)
 
     def get_perf_score(self):
+        def thread_job(data, q):
+            for i in range(len(data)):
+                util.apply_perf_BinPath(data[i][0], data[i][1], data[i][2])
+            q.put(data[i][2])
+
+        def multithread(data):
+            q = Queue()
+            all_thread = []
+            score = 0
+            for i in range(len(data)):
+                thread = threading.Thread(target=thread_job, args=(data[i], q))
+                thread.start()
+                all_thread.append(thread)
+            for t in all_thread:
+                t.join()
+            for _ in range(len(all_thread)):
+                score += q.get()
+            return score
+
         perf_score = 0
-        for idx in range(self.size):
-            enroll_ipp_path = self.landmarks_frame.iloc[idx, 7]
-            verify_ipp_path = self.landmarks_frame.iloc[idx, 8]
-            match_score = util.apply_perf_BinPath(enroll_ipp_path, verify_ipp_path)
-            perf_score += match_score
+
+        for idx in progressbar.progressbar(range(0,self.size,self.thread)):
+
+            thread_data = []
+            for t in range(self.thread):
+                thread_data.append(self.landmarks_frame.iloc[idx + t, 7], self.landmarks_frame.iloc[idx + t, 8], 0)
+            score = multithread(thread_data)
+
+            perf_score += score
         return perf_score
 
-        if __name__ == '__main__':
-            pass
+if __name__ == '__main__':
+    pass
