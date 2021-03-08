@@ -1,14 +1,14 @@
-from skimage.feature import local_binary_pattern
-import numpy as np
-import struct
-import cv2
+import csv
 import math
 import os
-import csv
 import re
 import shutil
+import struct
+import subprocess
 
-
+import cv2
+import numpy as np
+from skimage.feature import local_binary_pattern
 
 
 def read_bin(bin_path, tuple_size=(200, 200), low_endian=True):
@@ -334,6 +334,7 @@ def parse_genuines(gen_file):
             data.append(info)
     return data
 
+
 # egistec_200x200_cardo_2PX
 # egistec_200x200_cardo_2PA
 # egistec_200x200_cardo_2PA_NEW
@@ -443,7 +444,7 @@ def parse_genuines(gen_file):
 def run_perf_sum_score(test_folder, org=False):
     # write index file
     write_fpdboncex_cmd = "python ..\\..\\read_sys_file\\generate_4folder.py {} > {}\\i.fpdbindex".format(test_folder,
-                                                                                                      test_folder)
+                                                                                                          test_folder)
     os.system(write_fpdboncex_cmd)
 
     # execute perf
@@ -467,6 +468,57 @@ def run_perf_sum_score(test_folder, org=False):
         sum_score += int(info['score'])
         score_array.append(int(info['score']))
     return sum_score, score_array
+
+
+def runcmd(command):
+    try:
+        ret = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding="utf-8",
+                             timeout=5)
+        if ret.returncode == 0:
+            # print("success:", ret)
+            return ret.stdout
+        else:
+            print("error:", ret)
+            return False
+    except subprocess.CalledProcessError as e:
+        print(e.output)
+        return False
+
+
+def apply_perf(raw_e, raw_v):
+    perf_result = []
+    perf_score = 0
+    for i in range(raw_e.shape[0]):
+        bin_e = raw_e[i].astype('uint8')
+        bin_v = raw_v[i].astype('uint8')
+        f_e = open('e.bin', 'w+b')
+        binary_format = bytearray(bin_e)
+        f_e.write(binary_format)
+        f_e.close()
+        f_v = open('v.bin', 'w+b')
+        binary_format = bytearray(bin_v)
+        f_v.write(binary_format)
+        f_v.close()
+        stdout = runcmd('PBexe.exe e.bin v.bin')  # match_score = 57133, rot = 0, dx = 0, dy = 0,
+        match_score = -1
+        if str(stdout):
+            pos_str = stdout.find('match_score = ') + 14
+            pos_end = stdout.find(', rot', pos_str)
+            match_score = int(stdout[pos_str: pos_end])
+        perf_result.append(match_score)
+        perf_score += match_score
+    print('perf_score = {}'.format(perf_score))
+    return perf_result
+
+
+def apply_perf_BinPath(bin_e, bin_v):
+    stdout = runcmd('PBexe.exe {} {}'.format(bin_e, bin_v))  # match_score = 57133, rot = 0, dx = 0, dy = 0,
+    match_score = -1
+    if str(stdout):
+        pos_str = stdout.find('match_score = ') + 14
+        pos_end = stdout.find(', rot', pos_str)
+        match_score = int(stdout[pos_str: pos_end])
+    return match_score
 
 
 def show_ndarray(img, name):

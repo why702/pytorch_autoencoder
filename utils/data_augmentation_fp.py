@@ -272,5 +272,14 @@ class PerfDataset(Data.Dataset):
             #     print("Successfully created the directory %s " % out_dir)
         im.save(output_path)
 
+    def get_perf_score(self):
+        perf_score = 0
+        for idx in range(self.size):
+            enroll_ipp_path = self.landmarks_frame.iloc[idx, 7]
+            verify_ipp_path = self.landmarks_frame.iloc[idx, 8]
+            match_score = util.apply_perf_BinPath(enroll_ipp_path, verify_ipp_path)
+            perf_score += match_score
+        return perf_score
+
         if __name__ == '__main__':
             pass

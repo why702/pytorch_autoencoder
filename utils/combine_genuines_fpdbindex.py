@@ -296,6 +296,7 @@ def get_pair_info(gen_data0, index_data0, root_dir, output_file, GOOD=True):
             #     copyfile(img_path, out_path)
     pass
 
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("path0", help="directory to parse")
