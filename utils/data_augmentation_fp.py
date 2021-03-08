@@ -230,6 +230,14 @@ class PerfDataset(Data.Dataset):
 
         return enroll_raw, enroll_ipp, verify_raw, verify_ipp, score
 
+    def get_perf_score(self):
+        for idx in range(self.size):
+            enroll_ipp_path = self.landmarks_frame.iloc[idx, 7]
+            verify_ipp_path = self.landmarks_frame.iloc[idx, 8]
+            enroll_ipp = util.read_8bit_bin(enroll_ipp_path, (self.width, self.height))
+            verify_ipp = util.read_8bit_bin(verify_ipp_path, (self.width, self.height))
+            util.apply_perf()
+
 
 if __name__ == '__main__':
     pass
