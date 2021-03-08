@@ -5,6 +5,8 @@ import re
 import shutil
 import struct
 import subprocess
+import threading
+from queue import Queue
 
 import cv2
 import numpy as np
@@ -486,6 +488,46 @@ def runcmd(command):
 
 
 def apply_perf(raw_e, raw_v):
+    perf_result = []
+    perf_score = 0
+    for i in range(raw_e.shape[0]):
+        bin_e = raw_e[i].astype('uint8')
+        bin_v = raw_v[i].astype('uint8')
+        f_e = open('e.bin', 'w+b')
+        binary_format = bytearray(bin_e)
+        f_e.write(binary_format)
+        f_e.close()
+        f_v = open('v.bin', 'w+b')
+        binary_format = bytearray(bin_v)
+        f_v.write(binary_format)
+        f_v.close()
+        PBexe_path = os.path.join(os.path.dirname(__file__), 'PBexe.exe')
+        stdout = runcmd('{} e.bin v.bin'.format(PBexe_path))  # match_score = 57133, rot = 0, dx = 0, dy = 0,
+        match_score = -1
+        if stdout:
+            pos_str = stdout.find('match_score = ') + 14
+            pos_end = stdout.find(', rot', pos_str)
+            match_score = int(stdout[pos_str: pos_end])
+        perf_result.append(match_score)
+        perf_score += match_score
+    print('perf_score = {}'.format(perf_score))
+    return perf_result
+
+def apply_perf_thread(raw_e, raw_v):
+    def thread_job(data):
+        data[2] = apply_perf_BinPath(data[0], data[1])
+
+    def multithread(data):
+        all_thread = []
+        for i in range(len(data)):
+            thread = threading.Thread(target=thread_job, args=data[i])
+            thread.start()
+            all_thread.append(thread)
+        for t in all_thread:
+            t.join()
+        score_array = data[:,2]
+        return score_array
+
     perf_result = []
     perf_score = 0
     for i in range(raw_e.shape[0]):
