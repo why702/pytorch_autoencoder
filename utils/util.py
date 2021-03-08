@@ -512,7 +512,7 @@ def apply_perf(raw_e, raw_v):
     return perf_result
 
 
-def apply_perf_BinPath(bin_e, bin_v, match_score):
+def apply_perf_BinPath(bin_e, bin_v):
     PBexe_path = os.path.join(os.path.dirname(__file__), 'PBexe.exe')
     stdout = runcmd('{} {} {}'.format(PBexe_path, bin_e, bin_v))  # match_score = 57133, rot = 0, dx = 0, dy = 0,
     match_score = -1
@@ -520,7 +520,7 @@ def apply_perf_BinPath(bin_e, bin_v, match_score):
         pos_str = stdout.find('match_score = ') + 14
         pos_end = stdout.find(', rot', pos_str)
         match_score = int(stdout[pos_str: pos_end])
-    return
+    return match_score
 
 
 def show_ndarray(img, name):

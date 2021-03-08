@@ -1,5 +1,7 @@
 import os
 import random
+import threading
+from queue import Queue
 
 import numpy as np
 import pandas as pd
@@ -8,8 +10,6 @@ import torch
 import torch.utils.data as Data
 import torchvision.transforms.functional as TF
 from PIL import Image
-import threading
-from queue import Queue
 
 import utils.util as util
 from utils.combine_genuines_fpdbindex import parse_genuines, parse_index, get_pair_info
@@ -279,9 +279,8 @@ class PerfDataset(Data.Dataset):
 
     def get_perf_score(self):
         def thread_job(data, q):
-            for i in range(len(data)):
-                util.apply_perf_BinPath(data[i][0], data[i][1], data[i][2])
-            q.put(data[i][2])
+            match_score = util.apply_perf_BinPath(data[0], data[1])
+            q.put(match_score)
 
         def multithread(data):
             q = Queue()
@@ -299,15 +298,21 @@ class PerfDataset(Data.Dataset):
 
         perf_score = 0
 
-        for idx in progressbar.progressbar(range(0,self.size,self.thread)):
+        with progressbar.ProgressBar(max_value=self.size) as bar:
+            for idx in range(0, self.size, self.thread):
+                thread_data = []
+                thread = self.thread
+                if self.size - idx < self.thread:
+                    thread = self.size - idx
+                for t in range(thread):
+                    thread_data.append(
+                        [self.landmarks_frame.iloc[idx + t, 7], self.landmarks_frame.iloc[idx + t, 8], 0])
+                score = multithread(thread_data)
 
-            thread_data = []
-            for t in range(self.thread):
-                thread_data.append(self.landmarks_frame.iloc[idx + t, 7], self.landmarks_frame.iloc[idx + t, 8], 0)
-            score = multithread(thread_data)
-
-            perf_score += score
+                perf_score += score
+                bar.update(idx)
         return perf_score
+
 
 if __name__ == '__main__':
     pass
