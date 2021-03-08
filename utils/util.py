@@ -1,13 +1,16 @@
-from skimage.feature import local_binary_pattern
-import numpy as np
-import struct
-import cv2
+import csv
 import math
 import os
-import csv
 import re
 import shutil
+import struct
 import subprocess
+import threading
+from queue import Queue
+
+import cv2
+import numpy as np
+from skimage.feature import local_binary_pattern
 
 
 def read_bin(bin_path, tuple_size=(200, 200), low_endian=True):
@@ -334,10 +337,116 @@ def parse_genuines(gen_file):
     return data
 
 
+# egistec_200x200_cardo_2PX
+# egistec_200x200_cardo_2PA
+# egistec_200x200_cardo_2PA_NEW
+# egistec_200x200_cardo_2PB
+# egistec_200x200_cardo_2PB_CH1M30
+# egistec_200x200_cardo_3PX
+# egistec_200x200_cardo_3PC
+# egistec_200x200_cardo_3PD
+# egistec_200x200_cardo_3PDx
+# egistec_193x193_cardo_3PA
+# egistec_193x193_cardo_3PF
+# egistec_120x33_cardo_525
+# egistec_120x27_cardo_5XX
+# egistec_120x25_cardo_528
+# egistec_134x188_cardo_702_NEW
+# egistec_134x188_cardo_702_INV
+# egistec_134x188_cardo_702
+# egistec_200x200_cardo_CH1ABY
+# egistec_200x200_cardo_CH1AJA
+# egistec_200x200_cardo_CH1AJB
+# egistec_200x200_cardo_CH1AJA_demorie
+# egistec_200x200_cardo_CH1AJB_demorie
+# egistec_200x200_cardo_CH1LA
+# egistec_200x200_cardo_CH1LA_NEW
+# egistec_200x200_cardo_ET760
+# egistec_142x142_cardo_ET760_CROP
+# egistec_150x104_cardo_ET760_CROP2
+# egistec_134x188_cardo_CH1M30
+# egistec_134x188_cardo_CH1M30_INV
+# egistec_132x120_cardo_CH1M30
+# egistec_200x200_cardo_CH1E_SB
+# egistec_200x200_cardo_CH1E_SV
+# egistec_200x200_cardo_CH1E_H
+# egistec_200x200_cardo_CH1B_H
+# egistec_200x200_cardo_CH1J_SB
+# egistec_200x200_cardo_CL1MH2
+# egistec_134x188_cardo_CL1MH2
+# egistec_134x188_cardo_CL1MH2_INV
+# egistec_118x172_cardo_CL1WING
+# egistec_134x188_cardo_CL1WING
+# egistec_134x188_cardo_CL1WING_Latency
+# egistec_200x200_cardo_CL1MH2_CLT3
+# egistec_134x188_cardo_CL1MH2_C230
+# egistec_200x200_cardo_CL1MH2V
+# egistec_193x193_cardo_CL1TIME
+# egistec_193x193_cardo_CL1CAY
+# egistec_193x193_cardo_CL1CAY_pad
+# egistec_200x200_cardo_CO1D151
+# egistec_200x200_cardo_CO1A118
+# egistec_200x200_cardo_3PG_CO1A118
+# egistec_200x200_cardo_3PG_CH1JSC_H
+# egistec_200x200_cardo_CS3ZE2
+# egistec_200x200_cardo_CV1CPD1960
+# egistec_200x200_cardo_CV1CTD2041
+# egistec_200x200_cardo_3PG_CV1CPD1960
+# egistec_150x150_cardo_ET901
+# egistec_150x150_cardo_ET901_CL1V60
+# egistec_175x175_cardo_EF9002
+# egistec_175x175_cardo_EF9002_raw
+# egistec_200x200_cardo_S3PG1
+# egistec_200x200_cardo_S3PG2
+# egistec_200x200_cardo_S3PG3
+# egistec_200x200_cardo_S3PG3_Latency
+# egistec_200x200_cardo_S3PG4
+# egistec_200x200_cardo_S3PG5
+# egistec_200x200_cardo_S3PG6
+# egistec_200x200_cardo_S3PG6_new
+# egistec_200x200_evo_S3PG6
+# egistec_200x200_cardo_S3PG7
+# egistec_200x200_cardo_S3PG7_new
+# egistec_200x200_evo_S3PG7
+# egistec_200x200_cardo_S3PG8
+# egistec_200x200_cardo_S3PG8_new
+# egistec_200x200_cardo_S2PB1
+# egistec_200x200_cardo_S2PA4
+# egistec_193x193_cardo_S3PF5
+# egistec_193x193_cardo_S3PF2
+# egistec_193x193_cardo_S3PA2
+# egistec_193x193_cardo_S3PA2_Latency
+# egistec_134x188_cardo_SXC210
+# egistec_193x193_cardo_ET715_3PG
+# egistec_215x175_cardo_EL721_3PI_CV1CTD2052
+# egistec_215x175_evo_EL721_3PI_CV1CTD2052
+# egistec_200x200_cardo_ET760_2
+# egistec_200x200_cardo_ET760_2_IPP61e
+# egistec_200x200_cardo_ET760_3
+# egistec_215x175_cardo_EL721_3PI_S3PI1
+# egistec_215x175_evo_EL721_3PI_S3PI1
+# egistec_200x200_cardo_CH2NTH_B
+# egistec_200x200_cardo_CH2NTH_V
+# egistec_200x200_cardo_CH2NTH
+# gen_0x0_eval_cardo
+# gen_130x130_neo
+# gen_130x130_neo_speed
+# gen_192x192_spectral
+# gen_192x192_minutiae
+# gen_192x192_minutiae_speed_mem
+# gen_80x64_cardo_capacitive
+# gen_6x6_cardo_embedded_363dpi
+# gen_6x6_cardo_embedded_508dpi
+# gen_10x10_hybrid_embedded_254dpi
+# gen_10x10_cardo_embedded_363dpi
+# gen_8x8_hybrid_embedded_254dpi
+# gen_8x8_hybrid_plus_embedded_254dpi
+# gen_8x8_cardo_embedded_363dpi
+# gen_fullsize_cardo_embedded_254dpi
 def run_perf_sum_score(test_folder, org=False):
     # write index file
-    write_fpdboncex_cmd = "python ..\\read_sys_file\\generate_4folder.py {} > {}\\i.fpdbindex".format(test_folder,
-                                                                                                      test_folder)
+    write_fpdboncex_cmd = "python ..\\..\\read_sys_file\\generate_4folder.py {} > {}\\i.fpdbindex".format(test_folder,
+                                                                                                          test_folder)
     os.system(write_fpdboncex_cmd)
 
     # execute perf
@@ -346,9 +455,10 @@ def run_perf_sum_score(test_folder, org=False):
         key = "org"
     output_perf = ".\\test\\{}".format(key)
     if os.path.exists(output_perf) and org is False:
-        shutil.rmtree(output_perf)
-    perf_cmd = "..\\PerfEval_win_64.exe -skip -rs={} -n=test -db_mask -Aeval.inverted_mask=1 -improve_dry=94 -latency_adjustment=0 -algo=egistec_200x200_cardo_3PG_CH1JSC_H -tp=image -api=mobile -ver_type=dec -far=1:100K -ms=allx:ogi -enr=1000of15+g -div=1000 -Cmaxtsize=1024000 -ver_update=gen -scorefiles=1 -static_pattern_detect -threads=1 -Agen.aperture.radius=120 -Agen.aperture.x=107 -Agen.aperture.y=87  \"{}\\i.fpdbindex\" > perf_info.txt".format(
+        shutil.rmtree(output_perf, ignore_errors=True)
+    perf_cmd = "..\\..\\PerfEval_win_64.exe -skip -rs={} -n=test -db_mask -Aeval.inverted_mask=1 -improve_dry=94 -latency_adjustment=0 -algo=egistec_200x200_cardo_CH1AJA -tp=image -api=mobile -ver_type=dec -far=1:100K -ms=allx:ogi -enr=1000of15+g -div=1000 -Cmaxtsize=1024000 -ver_update=gen -scorefiles=1 -static_pattern_detect -threads=4 -Agen.aperture.radius=120 -Agen.aperture.x=107 -Agen.aperture.y=87  \"{}\\i.fpdbindex\" > perf_info.txt".format(
         key, test_folder)
+    print('run\n{}'.format(perf_cmd))
     os.system(perf_cmd)
 
     # read genuines.txt
@@ -391,9 +501,10 @@ def apply_perf(raw_e, raw_v):
         binary_format = bytearray(bin_v)
         f_v.write(binary_format)
         f_v.close()
-        stdout = runcmd('PBexe.exe e.bin v.bin')  # match_score = 57133, rot = 0, dx = 0, dy = 0,
+        PBexe_path = os.path.join(os.path.dirname(__file__), 'PBexe.exe')
+        stdout = runcmd('{} e.bin v.bin'.format(PBexe_path))  # match_score = 57133, rot = 0, dx = 0, dy = 0,
         match_score = -1
-        if str(stdout):
+        if stdout:
             pos_str = stdout.find('match_score = ') + 14
             pos_end = stdout.find(', rot', pos_str)
             match_score = int(stdout[pos_str: pos_end])
@@ -401,6 +512,57 @@ def apply_perf(raw_e, raw_v):
         perf_score += match_score
     print('perf_score = {}'.format(perf_score))
     return perf_result
+
+def apply_perf_thread(raw_e, raw_v):
+    def thread_job(data):
+        data[2] = apply_perf_BinPath(data[0], data[1])
+
+    def multithread(data):
+        all_thread = []
+        for i in range(len(data)):
+            thread = threading.Thread(target=thread_job, args=data[i])
+            thread.start()
+            all_thread.append(thread)
+        for t in all_thread:
+            t.join()
+        score_array = data[:,2]
+        return score_array
+
+    perf_result = []
+    perf_score = 0
+    for i in range(raw_e.shape[0]):
+        bin_e = raw_e[i].astype('uint8')
+        bin_v = raw_v[i].astype('uint8')
+        f_e = open('e.bin', 'w+b')
+        binary_format = bytearray(bin_e)
+        f_e.write(binary_format)
+        f_e.close()
+        f_v = open('v.bin', 'w+b')
+        binary_format = bytearray(bin_v)
+        f_v.write(binary_format)
+        f_v.close()
+        PBexe_path = os.path.join(os.path.dirname(__file__), 'PBexe.exe')
+        stdout = runcmd('{} e.bin v.bin'.format(PBexe_path))  # match_score = 57133, rot = 0, dx = 0, dy = 0,
+        match_score = -1
+        if stdout:
+            pos_str = stdout.find('match_score = ') + 14
+            pos_end = stdout.find(', rot', pos_str)
+            match_score = int(stdout[pos_str: pos_end])
+        perf_result.append(match_score)
+        perf_score += match_score
+    print('perf_score = {}'.format(perf_score))
+    return perf_result
+
+
+def apply_perf_BinPath(bin_e, bin_v):
+    PBexe_path = os.path.join(os.path.dirname(__file__), 'PBexe.exe')
+    stdout = runcmd('{} {} {}'.format(PBexe_path, bin_e, bin_v))  # match_score = 57133, rot = 0, dx = 0, dy = 0,
+    match_score = -1
+    if stdout:
+        pos_str = stdout.find('match_score = ') + 14
+        pos_end = stdout.find(', rot', pos_str)
+        match_score = int(stdout[pos_str: pos_end])
+    return match_score
 
 
 def show_ndarray(img, name):

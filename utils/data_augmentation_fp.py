@@ -1,10 +1,15 @@
-import random
 import os
+import random
+import threading
+from queue import Queue
+
 import numpy as np
 import pandas as pd
+import progressbar
 import torch
 import torch.utils.data as Data
 import torchvision.transforms.functional as TF
+from PIL import Image
 
 import utils.util as util
 from utils.combine_genuines_fpdbindex import parse_genuines, parse_index, get_pair_info
@@ -136,6 +141,7 @@ class PerfDataset(Data.Dataset):
         self.RBS = RBS
         self.low_endian = not RBS
         self.PI = PI
+        self.thread = 8
 
         gen_data0 = parse_genuines(gen_file)
         index_data0 = parse_index(index_file)
@@ -145,6 +151,7 @@ class PerfDataset(Data.Dataset):
         self.landmarks_frame = pd.read_csv(csv_file)
         self.size = self.landmarks_frame.shape[0]
         print("Get {} pairs of image".format(self.size))
+        print('perf_score = {}'.format(self.get_perf_score()))
 
     def __len__(self):
         return len(self.landmarks_frame)
@@ -211,7 +218,7 @@ class PerfDataset(Data.Dataset):
             util.mss_interpolation(enroll_raw.astype('float32'), self.width, self.height)
             util.mss_interpolation(verify_raw.astype('float32'), self.width, self.height)
 
-        # to uint8
+        # normalize
         enroll_raw = ((enroll_raw - np.min(enroll_raw)) / (np.max(enroll_raw) - np.min(enroll_raw))).astype('float32')
         verify_raw = ((verify_raw - np.min(verify_raw)) / (np.max(verify_raw) - np.min(verify_raw))).astype('float32')
         enroll_ipp = enroll_ipp.astype('float32')
@@ -230,13 +237,81 @@ class PerfDataset(Data.Dataset):
 
         return enroll_raw, enroll_ipp, verify_raw, verify_ipp, score
 
+    def get_img(self, img_path):
+        if self.RBS:
+            img_path = img_path.replace("image_bin", "image_raw")
+        else:
+            img_path = img_path.replace("_Img8b_", "_Img16b_")
+        img_path = img_path.replace(".png", ".bin")
+
+        img = util.read_bin(img_path, (self.width, self.height), self.low_endian)
+
+        if self.PI:
+            util.mss_interpolation(img.astype('float32'), self.width, self.height)
+
+        img = ((img - np.min(img)) / (np.max(img) - np.min(img))).astype('float32')
+
+        # padding
+        img = np.pad(img, self.pad_width, 'reflect')
+
+        return img
+
+    def save_img(self, img, output_path):
+        pad_h = self.pad_width[0][0]
+        pad_w = self.pad_width[1][0]
+        # crop
+        img = img[pad_h:self.height, pad_w:self.width]
+
+        # to uint8
+        img = ((img - np.min(img)) * 255 / (np.max(img) - np.min(img))).astype('uint8')
+
+        # save
+        im = Image.fromarray(img)
+        out_dir = os.path.dirname(output_path)
+        if os.path.exists(out_dir) is False:
+            try:
+                os.makedirs(out_dir)
+            except OSError:
+                print("Creation of the directory %s failed" % out_dir)
+            # else:
+            #     print("Successfully created the directory %s " % out_dir)
+        im.save(output_path)
+
     def get_perf_score(self):
-        for idx in range(self.size):
-            enroll_ipp_path = self.landmarks_frame.iloc[idx, 7]
-            verify_ipp_path = self.landmarks_frame.iloc[idx, 8]
-            enroll_ipp = util.read_8bit_bin(enroll_ipp_path, (self.width, self.height))
-            verify_ipp = util.read_8bit_bin(verify_ipp_path, (self.width, self.height))
-            util.apply_perf()
+        def thread_job(data, q):
+            match_score = util.apply_perf_BinPath(data[0], data[1])
+            q.put(match_score)
+
+        def multithread(data):
+            q = Queue()
+            all_thread = []
+            score = 0
+            for i in range(len(data)):
+                thread = threading.Thread(target=thread_job, args=(data[i], q))
+                thread.start()
+                all_thread.append(thread)
+            for t in all_thread:
+                t.join()
+            for _ in range(len(all_thread)):
+                score += q.get()
+            return score
+
+        perf_score = 0
+
+        with progressbar.ProgressBar(max_value=self.size) as bar:
+            for idx in range(0, self.size, self.thread):
+                thread_data = []
+                thread = self.thread
+                if self.size - idx < self.thread:
+                    thread = self.size - idx
+                for t in range(thread):
+                    thread_data.append(
+                        [self.landmarks_frame.iloc[idx + t, 7], self.landmarks_frame.iloc[idx + t, 8], 0])
+                score = multithread(thread_data)
+
+                perf_score += score
+                bar.update(idx)
+        return perf_score
 
 
 if __name__ == '__main__':
