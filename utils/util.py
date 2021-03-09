@@ -6,7 +6,6 @@ import shutil
 import struct
 import subprocess
 import threading
-from queue import Queue
 
 import cv2
 import numpy as np
@@ -456,8 +455,10 @@ def run_perf_sum_score(test_folder, org=False):
     output_perf = ".\\test\\{}".format(key)
     if os.path.exists(output_perf) and org is False:
         shutil.rmtree(output_perf, ignore_errors=True)
-    perf_cmd = "..\\..\\PerfEval_win_64.exe -skip -rs={} -n=test -db_mask -Aeval.inverted_mask=1 -improve_dry=94 -latency_adjustment=0 -algo=egistec_200x200_cardo_CH1AJA -tp=image -api=mobile -ver_type=dec -far=1:100K -ms=allx:ogi -enr=1000of15+g -div=1000 -Cmaxtsize=1024000 -ver_update=gen -scorefiles=1 -static_pattern_detect -threads=4 -Agen.aperture.radius=120 -Agen.aperture.x=107 -Agen.aperture.y=87  \"{}\\i.fpdbindex\" > perf_info.txt".format(
-        key, test_folder)
+
+    PBexe_path = os.path.join(os.path.dirname(__file__), 'PerfEval_win_64.exe')
+    perf_cmd = "{} -skip -rs={} -n=test -improve_dry=94 -latency_adjustment=0 -algo=egistec_200x200_cardo_CH1AJA -tp=image -api=mobile -ver_type=dec -far=1:100K -ms=allx:ogi -enr=1000of15+g -div=1000 -Cmaxtsize=1024000 -ver_update=gen -scorefiles=1 -static_pattern_detect -threads=4 -Agen.aperture.radius=120 -Agen.aperture.x=107 -Agen.aperture.y=87  \"{}\\i.fpdbindex\" > perf_info.txt".format(
+        PBexe_path, key, test_folder)
     print('run\n{}'.format(perf_cmd))
     os.system(perf_cmd)
 
@@ -510,8 +511,9 @@ def apply_perf(raw_e, raw_v):
             match_score = int(stdout[pos_str: pos_end])
         perf_result.append(match_score)
         perf_score += match_score
-    print('perf_score = {}'.format(perf_score))
+    # print('perf_score = {}'.format(perf_score))
     return perf_result
+
 
 def apply_perf_thread(raw_e, raw_v):
     def thread_job(data):
@@ -525,7 +527,7 @@ def apply_perf_thread(raw_e, raw_v):
             all_thread.append(thread)
         for t in all_thread:
             t.join()
-        score_array = data[:,2]
+        score_array = data[:, 2]
         return score_array
 
     perf_result = []
