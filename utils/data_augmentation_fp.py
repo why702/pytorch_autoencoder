@@ -66,8 +66,8 @@ class FingerprintDataset(Data.Dataset):
             label = TF.vflip(label)
 
         # Transform to tensor
-        image = TF.to_tensor(image)
-        label = TF.to_tensor(label)
+        image = TF.to_tensor(np.array(image))
+        label = TF.to_tensor(np.array(label))
 
         # image = TF.normalize(image, mean=(0,), std=(1,))
         # label = TF.normalize(label, mean=(0,), std=(1,))
@@ -182,8 +182,8 @@ class PerfDataset(Data.Dataset):
             label = TF.vflip(label)
 
         # Transform to tensor
-        image = TF.to_tensor(image)
-        label = TF.to_tensor(label)
+        image = TF.to_tensor(np.array(image))
+        label = TF.to_tensor(np.array(label))
 
         # image = TF.normalize(image, mean=(0,), std=(1,))
         # label = TF.normalize(label, mean=(0,), std=(1,))
