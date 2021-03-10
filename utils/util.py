@@ -556,7 +556,7 @@ def apply_perf_thread(raw_e, raw_v, thread):
         for t in range(thread):
             perf_result.append(thread_data[t][2])
             perf_score += thread_data[t][2]
-    print('perf_score = {}'.format(perf_score))
+    # print('perf_score = {}'.format(perf_score))
     return perf_result
 
 
