@@ -474,84 +474,90 @@ def run_perf_sum_score(test_folder, org=False):
 
 
 def runcmd(command):
-    try:
-        ret = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding="utf-8",
-                             timeout=5)
-        if ret.returncode == 0:
-            # print("success:", ret)
-            return ret.stdout
-        else:
-            print("error:", ret)
-            return False
-    except subprocess.CalledProcessError as e:
-        print(e.output)
-        return False
+    max_runs = 2
+    run = 0
+    while run < max_runs:
+        try:
+            ret = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding="utf-8",
+                                 timeout=5)
+            if ret.returncode == 0:
+                # print("success:", ret)
+                return ret.stdout
+            else:
+                print("error:", ret)
+                continue
+        except subprocess.TimeoutExpired:
+            continue
+        finally:
+            run += 1
+    return False
+
+
+def apply_perf_one(raw_e, raw_v, file_label):
+    bin_e = raw_e.astype('uint8')
+    bin_v = raw_v.astype('uint8')
+
+    e_path = os.path.join(os.path.dirname(__file__), 'e_{}.bin'.format(file_label))
+    v_path = os.path.join(os.path.dirname(__file__), 'v_{}.bin'.format(file_label))
+
+    f_e = open(e_path, 'w+b')
+    binary_format = bytearray(bin_e)
+    f_e.write(binary_format)
+    f_e.close()
+    f_v = open(v_path, 'w+b')
+    binary_format = bytearray(bin_v)
+    f_v.write(binary_format)
+    f_v.close()
+    PBexe_path = os.path.join(os.path.dirname(__file__), 'PBexe.exe')
+    stdout = runcmd('{} {} {}'.format(PBexe_path, e_path, v_path))  # match_score = 57133, rot = 0, dx = 0, dy = 0,
+    match_score = -1
+    if stdout:
+        pos_str = stdout.find('match_score = ') + 14
+        pos_end = stdout.find(', rot', pos_str)
+        match_score = int(stdout[pos_str: pos_end])
+    return match_score
 
 
 def apply_perf(raw_e, raw_v):
     perf_result = []
     perf_score = 0
     for i in range(raw_e.shape[0]):
-        bin_e = raw_e[i].astype('uint8')
-        bin_v = raw_v[i].astype('uint8')
-        f_e = open('e.bin', 'w+b')
-        binary_format = bytearray(bin_e)
-        f_e.write(binary_format)
-        f_e.close()
-        f_v = open('v.bin', 'w+b')
-        binary_format = bytearray(bin_v)
-        f_v.write(binary_format)
-        f_v.close()
-        PBexe_path = os.path.join(os.path.dirname(__file__), 'PBexe.exe')
-        stdout = runcmd('{} e.bin v.bin'.format(PBexe_path))  # match_score = 57133, rot = 0, dx = 0, dy = 0,
-        match_score = -1
-        if stdout:
-            pos_str = stdout.find('match_score = ') + 14
-            pos_end = stdout.find(', rot', pos_str)
-            match_score = int(stdout[pos_str: pos_end])
-        perf_result.append(match_score)
+        match_score = apply_perf_one(raw_e[i], raw_v[i], "")
         perf_score += match_score
     # print('perf_score = {}'.format(perf_score))
     return perf_result
 
 
-def apply_perf_thread(raw_e, raw_v):
-    def thread_job(data):
-        data[2] = apply_perf_BinPath(data[0], data[1])
+def apply_perf_thread(raw_e, raw_v, thread):
+    def thread_job(data, label):
+        data[2] = apply_perf_one(data[0], data[1], label)
 
     def multithread(data):
         all_thread = []
         for i in range(len(data)):
-            thread = threading.Thread(target=thread_job, args=data[i])
+            thread = threading.Thread(target=thread_job, args=(data[i], str(i)))
             thread.start()
             all_thread.append(thread)
         for t in all_thread:
             t.join()
-        score_array = data[:, 2]
-        return score_array
+        # score_array = data[:, 2]
+        # return score_array
 
     perf_result = []
     perf_score = 0
-    for i in range(raw_e.shape[0]):
-        bin_e = raw_e[i].astype('uint8')
-        bin_v = raw_v[i].astype('uint8')
-        f_e = open('e.bin', 'w+b')
-        binary_format = bytearray(bin_e)
-        f_e.write(binary_format)
-        f_e.close()
-        f_v = open('v.bin', 'w+b')
-        binary_format = bytearray(bin_v)
-        f_v.write(binary_format)
-        f_v.close()
-        PBexe_path = os.path.join(os.path.dirname(__file__), 'PBexe.exe')
-        stdout = runcmd('{} e.bin v.bin'.format(PBexe_path))  # match_score = 57133, rot = 0, dx = 0, dy = 0,
-        match_score = -1
-        if stdout:
-            pos_str = stdout.find('match_score = ') + 14
-            pos_end = stdout.find(', rot', pos_str)
-            match_score = int(stdout[pos_str: pos_end])
-        perf_result.append(match_score)
-        perf_score += match_score
+    batch_size = raw_e.shape[0]
+    for idx in range(0, batch_size, thread):
+        thread_data = []
+        if batch_size - idx < thread:
+            thread = batch_size - idx
+        for t in range(thread):
+            thread_data.append(
+                [raw_e[idx + t], raw_v[idx + t], 0])
+        multithread(thread_data)
+
+        for t in range(thread):
+            perf_result.append(thread_data[t][2])
+            perf_score += thread_data[t][2]
     print('perf_score = {}'.format(perf_score))
     return perf_result
 
