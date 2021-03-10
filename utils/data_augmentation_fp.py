@@ -18,7 +18,7 @@ from utils.combine_genuines_fpdbindex import parse_genuines, parse_index, get_pa
 class FingerprintDataset(Data.Dataset):
     """Face Landmarks dataset."""
 
-    def __init__(self, root_dir, csv_file, img_width, img_height, pad_width=0, RBS=False):
+    def __init__(self, root_dir, csv_file, img_width, img_height, pad_width=0, RBS=False, PI=False):
         """
         Args:
             csv_file (string): Path to the csv file with annotations.
@@ -30,6 +30,7 @@ class FingerprintDataset(Data.Dataset):
         self.height = img_height
         self.pad_width = pad_width
         self.RBS = RBS
+        self.PI = PI
         self.low_endian = not RBS
         util.read_bins_toCSV(root_dir, csv_file, img_width, img_height, RBS=RBS, GOOD=False)
 
@@ -78,19 +79,14 @@ class FingerprintDataset(Data.Dataset):
             idx = idx.tolist()
 
         image = util.read_bin(self.landmarks_frame.iloc[idx, 0], (self.width, self.height), self.low_endian)
-        bk = util.read_bin(self.landmarks_frame.iloc[idx, 1], (self.width, self.height), self.low_endian)
         ipp = util.read_8bit_bin(self.landmarks_frame.iloc[idx, 2], (self.width, self.height))
-        # diff = util.subtract(image, bk)
-        util.mss_interpolation(image.astype('float32'), self.width, self.height)
-        # plt.imshow(image)
-        # plt.show()
+
+        if self.PI:
+            util.mss_interpolation(image.astype('float32'), self.width, self.height)
+
         diff = image
 
         # # normalize
-        # diff = ((diff - np.mean(diff)) / np.std(diff)).astype('float32')
-        # ipp = ((ipp - np.mean(ipp)) / np.std(ipp)).astype('float32')
-
-        # to uint8
         diff = ((diff - np.min(diff)) / (np.max(diff) - np.min(diff))).astype('float32')
         ipp = ipp.astype('float32')
 
@@ -106,22 +102,38 @@ class FingerprintDataset(Data.Dataset):
             idx = idx.tolist()
 
         image = util.read_bin(self.landmarks_frame.iloc[idx, 0], (self.width, self.height), self.low_endian)
-        bk = util.read_bin(self.landmarks_frame.iloc[idx, 1], (self.width, self.height), self.low_endian)
+        # bk = util.read_bin(self.landmarks_frame.iloc[idx, 1], (self.width, self.height), self.low_endian)
         ipp_path = self.landmarks_frame.iloc[idx, 2]
         # diff = util.subtract(image, bk)
-        util.mss_interpolation(image.astype('float32'), self.width, self.height)
+        if self.PI:
+            util.mss_interpolation(image.astype('float32'), self.width, self.height)
         diff = image
 
         # # normalize
-        # diff = ((diff - np.mean(diff)) / np.std(diff)).astype('float32')
-
-        # to uint8
         diff = ((diff - np.mean(diff)) / (np.max(diff) - np.min(diff))).astype('float32')
 
         diff = np.pad(diff, self.pad_width, 'reflect')
-        diff = TF.to_tensor(diff)
-        diff.unsqueeze_(0)
+
         return diff, ipp_path
+
+    def save_img(self, img, output_path):
+        pad_h = self.pad_width[0][0]
+        pad_w = self.pad_width[1][0]
+        # crop
+        img = img[pad_h:self.height, pad_w:self.width]
+
+        # to uint8
+        img = ((img - np.min(img)) * 255 / (np.max(img) - np.min(img))).astype('uint8')
+
+        # save
+        im = Image.fromarray(img)
+        out_dir = os.path.dirname(output_path)
+        if os.path.exists(out_dir) is False:
+            try:
+                os.makedirs(out_dir)
+            except OSError:
+                print("Creation of the directory %s failed" % out_dir)
+        im.save(output_path)
 
 
 class PerfDataset(Data.Dataset):
