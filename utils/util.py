@@ -540,8 +540,6 @@ def apply_perf_thread(raw_e, raw_v, thread):
             all_thread.append(thread)
         for t in all_thread:
             t.join()
-        # score_array = data[:, 2]
-        # return score_array
 
     perf_result = []
     perf_score = 0
