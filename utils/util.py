@@ -6,11 +6,11 @@ import shutil
 import struct
 import subprocess
 import threading
+from datetime import datetime
 
 import cv2
 import numpy as np
 from skimage.feature import local_binary_pattern
-from datetime import datetime
 
 
 def read_bin(bin_path, tuple_size=(200, 200), low_endian=True):
