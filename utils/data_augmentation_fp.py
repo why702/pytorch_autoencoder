@@ -86,7 +86,7 @@ class FingerprintDataset(Data.Dataset):
 
         diff = image
 
-        # # normalize
+        # normalize
         diff = ((diff - np.min(diff)) / (np.max(diff) - np.min(diff))).astype('float32')
         ipp = ipp.astype('float32')
 
@@ -102,15 +102,15 @@ class FingerprintDataset(Data.Dataset):
             idx = idx.tolist()
 
         image = util.read_bin(self.landmarks_frame.iloc[idx, 0], (self.width, self.height), self.low_endian)
-        # bk = util.read_bin(self.landmarks_frame.iloc[idx, 1], (self.width, self.height), self.low_endian)
         ipp_path = self.landmarks_frame.iloc[idx, 2]
-        # diff = util.subtract(image, bk)
+
         if self.PI:
             util.mss_interpolation(image.astype('float32'), self.width, self.height)
+
         diff = image
 
-        # # normalize
-        diff = ((diff - np.mean(diff)) / (np.max(diff) - np.min(diff))).astype('float32')
+        # normalize
+        diff = ((diff - np.min(diff)) / (np.max(diff) - np.min(diff))).astype('float32')
 
         diff = np.pad(diff, self.pad_width, 'reflect')
 

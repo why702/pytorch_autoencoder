@@ -457,7 +457,9 @@ def run_perf_sum_score(test_folder, org=False):
         shutil.rmtree(output_perf, ignore_errors=True)
 
     PBexe_path = os.path.join(os.path.dirname(__file__), 'PerfEval_win_64.exe')
-    perf_cmd = "{} -skip -rs={} -n=test -improve_dry=94 -latency_adjustment=0 -algo=egistec_200x200_cardo_CH1AJA -tp=image -api=mobile -ver_type=dec -far=1:100K -ms=allx:ogi -enr=1000of15+g -div=1000 -Cmaxtsize=1024000 -ver_update=gen -scorefiles=1 -static_pattern_detect -threads=4 -Agen.aperture.radius=120 -Agen.aperture.x=107 -Agen.aperture.y=87  \"{}\\i.fpdbindex\" > perf_info.txt".format(
+    # perf_cmd = "{} -skip -rs={} -n=test -improve_dry=94 -latency_adjustment=0 -algo=egistec_200x200_cardo_CH1AJA -tp=image -api=mobile -ver_type=dec -far=1:100K -ms=allx:ogi -enr=1000of15+g -div=1000 -Cmaxtsize=1024000 -ver_update=gen -scorefiles=1 -static_pattern_detect -threads=4 -Agen.aperture.radius=120 -Agen.aperture.x=107 -Agen.aperture.y=87  \"{}\\i.fpdbindex\" > perf_info.txt".format(
+    #     PBexe_path, key, test_folder)
+    perf_cmd = "{} -skip -rs={} -n=test -improve_dry=94 -latency_adjustment=0 -algo=egistec_200x200_cardo_CH1AJA -tp=image -api=mobile -ver_type=dec -far=1:100K -ms=fvc2x:ogi -enr=1000of15+g -div=1000 -Cmaxtsize=1024000 -ver_update=gen -scorefiles=1 -static_pattern_detect -threads=4 -Agen.aperture.radius=120 -Agen.aperture.x=107 -Agen.aperture.y=87  \"{}\\i.fpdbindex\" > perf_info.txt".format(
         PBexe_path, key, test_folder)
     print('run\n{}'.format(perf_cmd))
     os.system(perf_cmd)
