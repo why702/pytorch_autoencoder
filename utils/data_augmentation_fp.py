@@ -10,10 +10,18 @@ import torch
 import torch.utils.data as Data
 import torchvision.transforms.functional as TF
 from PIL import Image
+import skimage.transform as trans
 
 import utils.util as util
 from utils.combine_genuines_fpdbindex import parse_genuines, parse_index, get_pair_info
 
+
+def transform_keypoints(kps, meta, invert=False):
+    keypoints = kps.copy()
+    if invert:
+        meta = np.linalg.inv(meta)
+    keypoints[:, :2] = np.dot(keypoints[:, :2], meta[:2, :2].T) + meta[:2, 2]
+    return keypoints
 
 class FingerprintDataset(Data.Dataset):
     """Face Landmarks dataset."""
@@ -120,7 +128,7 @@ class FingerprintDataset(Data.Dataset):
         pad_h = self.pad_width[0][0]
         pad_w = self.pad_width[1][0]
         # crop
-        img = img[pad_h:self.height, pad_w:self.width]
+        img = img[pad_h:self.height + pad_h, pad_w:self.width + pad_w]
 
         # to uint8
         img = ((img - np.min(img)) * 255 / (np.max(img) - np.min(img))).astype('uint8')
@@ -139,7 +147,8 @@ class FingerprintDataset(Data.Dataset):
 class PerfDataset(Data.Dataset):
     """Face Landmarks dataset."""
 
-    def __init__(self, gen_file, index_file, csv_file, img_width, img_height, pad_width=0, RBS=False, PI=False):
+    def __init__(self, gen_file, index_file, csv_file, img_width, img_height, pad_width=0, RBS=False, TRANS=True,
+                 PI=False):
         """
         Args:
             csv_file (string): Path to the csv file with annotations.
@@ -154,6 +163,7 @@ class PerfDataset(Data.Dataset):
         self.low_endian = not RBS
         self.PI = PI
         self.thread = 8
+        self.trans = TRANS
 
         gen_data0 = parse_genuines(gen_file)
         index_data0 = parse_index(index_file)
@@ -201,13 +211,16 @@ class PerfDataset(Data.Dataset):
         # label = TF.normalize(label, mean=(0,), std=(1,))
         return image, label
 
-    def __getitem__(self, idx, trans=True):
+    def __getitem__(self, idx):
         if torch.is_tensor(idx):
             idx = idx.tolist()
 
         enroll_ipp_path = self.landmarks_frame.iloc[idx, 7]
         verify_ipp_path = self.landmarks_frame.iloc[idx, 8]
         score = self.landmarks_frame.iloc[idx, 3]
+        rot = self.landmarks_frame.iloc[idx, 4]
+        dx = self.landmarks_frame.iloc[idx, 5]
+        dy = self.landmarks_frame.iloc[idx, 6]
 
         enroll_raw_path = None
         verify_raw_path = None
@@ -242,12 +255,29 @@ class PerfDataset(Data.Dataset):
         enroll_ipp = np.pad(enroll_ipp, self.pad_width, 'reflect')
         verify_ipp = np.pad(verify_ipp, self.pad_width, 'reflect')
 
+        # matching matrix
+        radian = rot / 180 * np.pi
+        meta = np.float32([[np.cos(radian), -np.sin(radian), dx], [np.sin(radian), np.cos(radian), dy]])
+        # Affine Transformation Matrix to theta
+        src = np.array([[0, 0], [0, 1], [1, 1]], dtype=np.float32)
+        dst = transform_keypoints(src, meta)
+        # normalize to [-1, 1]
+        src = src / [self.width, self.height] * 2 - 1
+        dst = dst / [self.width, self.height] * 2 - 1
+        theta = trans.estimate_transform("affine", src=dst, dst=src).params
+        theta = torch.tensor(theta, dtype=torch.float32)
+
         # transform
-        if trans:
+        if self.trans:
             enroll_raw, enroll_ipp = self.transform(enroll_raw, enroll_ipp)
             verify_raw, verify_ipp = self.transform(verify_raw, verify_ipp)
+        else:
+            enroll_raw = TF.to_tensor(np.array(enroll_raw))
+            enroll_ipp = TF.to_tensor(np.array(enroll_ipp))
+            verify_raw = TF.to_tensor(np.array(verify_raw))
+            verify_ipp = TF.to_tensor(np.array(verify_ipp))
 
-        return enroll_raw, enroll_ipp, verify_raw, verify_ipp, score
+        return enroll_raw, enroll_ipp, verify_raw, verify_ipp, score, theta
 
     def get_img(self, img_path):
         if self.RBS:
@@ -272,7 +302,7 @@ class PerfDataset(Data.Dataset):
         pad_h = self.pad_width[0][0]
         pad_w = self.pad_width[1][0]
         # crop
-        img = img[pad_h:self.height, pad_w:self.width]
+        img = img[pad_h:self.height + pad_h, pad_w:self.width + pad_w]
 
         # to uint8
         img = ((img - np.min(img)) * 255 / (np.max(img) - np.min(img))).astype('uint8')
@@ -288,6 +318,13 @@ class PerfDataset(Data.Dataset):
             # else:
             #     print("Successfully created the directory %s " % out_dir)
         im.save(output_path)
+
+    def crop_img(self, img):
+        pad_h = self.pad_width[0][0]
+        pad_w = self.pad_width[1][0]
+        # crop
+        img = img[:, :, pad_h:self.height + pad_h, pad_w:self.width + pad_w]
+        return img
 
     def get_perf_score(self):
         def thread_job(data, q):

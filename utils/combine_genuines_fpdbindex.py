@@ -217,6 +217,8 @@ def get_pair_info(gen_data0, index_data0, root_dir, output_file, GOOD=True):
         for info0 in gen_data0:
             if GOOD and int(info0['score']) < 20000:
                 continue
+            if int(info0['rotation']) == 0:  # TODO
+                continue
 
             enroll_id = info0['enroll']
             verify_id = info0['verify']
@@ -279,7 +281,7 @@ def get_pair_info(gen_data0, index_data0, root_dir, output_file, GOOD=True):
 
             writer.writerow(
                 [info0['enroll'], info0['verify'], info0['match'], info0['score'], info0['rotation'], info0['dx'],
-                 info0['dx'], enroll_path, verify_path, person, finger, verify, quality, cond, part, fr])
+                 info0['dy'], enroll_path, verify_path, person, finger, verify, quality, cond, part, fr])
 
             # # copy image
             # if verify_path.find('_md3') >= 0 and info0['match'] == '1':
