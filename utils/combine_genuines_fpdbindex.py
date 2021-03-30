@@ -13,7 +13,7 @@ def parse_genuines(gen_file):
     for line in all_lines:
         if line[0:1] == "#":
             continue
-        match = re.findall(r"\s*([0-9]+)\s*", line)
+        match = re.findall(r"\s*([0-9\-]+)\s*", line)
         if len(match) >= 23:
             info = dict()
             info['enroll'] = match[0] + match[1] + match[2]
@@ -217,8 +217,8 @@ def get_pair_info(gen_data0, index_data0, root_dir, output_file, GOOD=True):
         for info0 in gen_data0:
             if GOOD and int(info0['score']) < 20000:
                 continue
-            if int(info0['rotation']) == 0:  # TODO
-                continue
+            # if int(info0['rotation']) == 0:  # TODO
+            #     continue
 
             enroll_id = info0['enroll']
             verify_id = info0['verify']
