@@ -174,7 +174,7 @@ class PerfDataset(Data.Dataset):
         self.landmarks_frame = pd.read_csv(csv_file)
         self.size = self.landmarks_frame.shape[0]
         print("Get {} pairs of image".format(self.size))
-        # print('perf_score = {}'.format(self.get_perf_score()))
+        print('perf_score = {}'.format(self.get_perf_score()))
 
     def __len__(self):
         return len(self.landmarks_frame)
@@ -282,6 +282,7 @@ class PerfDataset(Data.Dataset):
             enroll_ipp = TF.to_tensor(np.array(enroll_ipp))
             verify_raw = TF.to_tensor(np.array(verify_raw))
             verify_ipp = TF.to_tensor(np.array(verify_ipp))
+            tran_matrix = np.float32([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
 
         # matching matrix
         radian = rot / 180 * np.pi

@@ -6,6 +6,7 @@ import shutil
 import struct
 import subprocess
 import threading
+from datetime import datetime
 
 import cv2
 import numpy as np
@@ -450,8 +451,13 @@ def run_perf_sum_score(test_folder, org=False):
 
     # execute perf
     key = "tst"
+    now = datetime.now()
+    dt_string = now.strftime("%Y%d%m_%H%M%S")
     if org:
         key = "org"
+    else:
+        key = key + "_" + dt_string
+
     output_perf = ".\\test\\{}".format(key)
     if os.path.exists(output_perf) and org is False:
         shutil.rmtree(output_perf, ignore_errors=True)
@@ -542,8 +548,6 @@ def apply_perf_thread(raw_e, raw_v, thread):
             all_thread.append(thread)
         for t in all_thread:
             t.join()
-        # score_array = data[:, 2]
-        # return score_array
 
     perf_result = []
     perf_score = 0
@@ -560,7 +564,7 @@ def apply_perf_thread(raw_e, raw_v, thread):
         for t in range(thread):
             perf_result.append(thread_data[t][2])
             perf_score += thread_data[t][2]
-    print('perf_score = {}'.format(perf_score))
+    # print('perf_score = {}'.format(perf_score))
     return perf_result
 
 
